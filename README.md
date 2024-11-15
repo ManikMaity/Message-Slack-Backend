@@ -9,3 +9,12 @@
 - In production we have two environments, development and production.
 - So we can setup our database according to the environment in db.config.js.
 - [RoboHash](https://robohash.org/) - This is a website which generates avatar images from text for you.
+
+- Add the token to collection variables in postman in script tab beside the Body scrite the following code:
+
+```js
+var jsonData = pm.response.json()
+var token = jsonData.data.token
+pm.collectionVariables.set('slack_token', token)
+```
+- This will add the token to the collection variables so that we can use it in the next request.
