@@ -8,3 +8,4 @@
 - `"simple-import-sort` - This is a pulugin for eslint to sort imports.
 - In production we have two environments, development and production.
 - So we can setup our database according to the environment in db.config.js.
+- [RoboHash](https://robohash.org/) - This is a website which generates avatar images from text for you.
