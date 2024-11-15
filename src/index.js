@@ -3,6 +3,7 @@ import statusCodes from 'http-status-codes'
 
 import connectDB from './config/db.config.js'
 import { PORT } from './config/variables.js'
+import apiRouter from './routes/apiRoute/api.route.js'
 
 const app = express()
 app.use(express.json())
@@ -14,6 +15,7 @@ app.get('/ping', (req, res) => {
     message: 'pong'
   })
 })
+app.use('/api', apiRouter)
 
 await connectDB()
 
