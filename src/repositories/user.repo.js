@@ -18,7 +18,7 @@ export const getUserByEmail = async (email) => {
 
 export const getUserByUsername = async (username) => {
   try {
-    const user = await UserModel.findOne({ username })
+    const user = await UserModel.findOne({ username }).select('-password')
     return user
   } catch (error) {
     console.log('getUserByUsername', error)
@@ -35,4 +35,4 @@ const userRepo = {
   getUserByUsername
 }
 
-export default userRepo;
+export default userRepo

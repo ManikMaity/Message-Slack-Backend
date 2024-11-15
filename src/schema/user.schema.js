@@ -1,4 +1,7 @@
+import bcrypt from 'bcrypt'
 import mongoose, { Schema } from 'mongoose'
+
+import { SALT_ROUND } from '../config/variables.js'
 
 const userSchema = new Schema(
   {
@@ -15,8 +18,9 @@ const userSchema = new Schema(
       type: String,
       required: [true, 'email is required'],
       unique: [true, 'email must be unique'],
-      // eslint-disable-next-line no-useless-escape
+
       match: [
+        // eslint-disable-next-line no-useless-escape
         /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
         'Please fill a valid email address'
       ]
@@ -34,6 +38,9 @@ const userSchema = new Schema(
 
 userSchema.pre('save', function (next) {
   const user = this
+  if (!user.isModified('password')) return next()
+  const hashedPassword = bcrypt.hashSync(user.password, SALT_ROUND)
+  user.password = hashedPassword
   user.avatar = `https://robohash.org/${user.username}`
   next()
 })
