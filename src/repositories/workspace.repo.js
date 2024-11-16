@@ -7,11 +7,24 @@ const workspaceRepo = {
         const workspace = await WorkspaceModel.findOne({name});
         return workspace;
     },
-    getWorkspaceByJoinCode : async (joinCode) => {},
-    addMemberToWorkspace : async (workspaceId, userId) => {},
-    addChannelToWorkspace : async (workspaceId, channelId) => {},
-    fetchAllWorkspacesByMemberId : async (memberId) => {},
-    
+    getWorkspaceByJoinCode : async (joinCode) => {
+        const workspace = await WorkspaceModel.findOne({joinCode});
+        return workspace;
+    },
+    addMemberToWorkspace : async (workspaceId, userId, role = 'member') => {
+        const workspace = await WorkspaceModel.findById(workspaceId);
+        workspace.members.push({member : userId, role});
+        await workspace.save();
+        return workspace
+    },
+    addChannelToWorkspace : async (workspaceId, channelId) => {
+        const workspace = await WorkspaceModel.findByIdAndUpdate(workspaceId, {$push : {channels : channelId}}, {new : true});
+        return workspace;
+    },
+    fetchAllWorkspacesByMemberId : async (memberId) => {
+        
+    },
+
 }
 
 export default workspaceRepo
