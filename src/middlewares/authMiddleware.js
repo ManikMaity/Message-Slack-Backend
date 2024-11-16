@@ -1,9 +1,14 @@
 import { StatusCodes } from 'http-status-codes'
-import { customErrorResponse, internalServerError } from '../utils/customErrorResponse.js'
 import jwt from 'jsonwebtoken'
-import { JWT_SECRET } from '../config/variables.js'
 
-const verifyToken = (req, res, next) => {
+import { JWT_SECRET } from '../config/variables.js'
+import userRepo from '../repositories/user.repo.js'
+import {
+  customErrorResponse,
+  internalServerError
+} from '../utils/customErrorResponse.js'
+
+const verifyToken = async (req, res, next) => {
   try {
     const token = req.headers['slack_token']
     if (!token) {
@@ -23,17 +28,31 @@ const verifyToken = (req, res, next) => {
         })
       )
     }
+
+    const user = await userRepo.getById(data.id)
+    if (!user) {
+      return res.status(StatusCodes.FORBIDDEN).json(
+        customErrorResponse({
+          message: 'Invalid token',
+          explanation: 'Slack token is invalid'
+        })
+      )
+    }
+    req.user = user
+    next()
   } catch (err) {
     console.log(err)
-    if (err.name === "JsonWebTokenError"){
-        return res.status(StatusCodes.FORBIDDEN).json(
-            customErrorResponse({
-                message : "Invalid auth token provided",
-                explanation :  "Invalid auth token provided"
-            })
-        )
+    if (err.name === 'JsonWebTokenError') {
+      return res.status(StatusCodes.FORBIDDEN).json(
+        customErrorResponse({
+          message: 'Invalid auth token provided',
+          explanation: 'Invalid auth token provided'
+        })
+      )
     }
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(internalServerError())
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json(internalServerError(err))
   }
 }
 

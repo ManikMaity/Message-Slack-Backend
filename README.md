@@ -17,4 +17,35 @@ var jsonData = pm.response.json()
 var token = jsonData.data.token
 pm.collectionVariables.set('slack_token', token)
 ```
+
 - This will add the token to the collection variables so that we can use it in the next request.
+
+
+### Message model
+```js
+
+const messageSchema = new mongoose.Schema({
+    text: String,
+    user : {
+        type : ObjectId,
+        ref : 'User'
+    },
+    channel : ObjectId,
+    likes : [{
+        user : ObjectId,
+        likeType : String
+    }],
+    replies : [{
+        ObjectId,
+        ref : 'Message'
+    }],
+    seenBy : [{
+        user : {
+            type : ObjectId,
+            ref : 'User'
+        },
+        seenAt : Date
+        seen : Boolean
+    }]
+
+}, {timestamps : true})
