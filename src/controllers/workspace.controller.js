@@ -1,6 +1,10 @@
 import { StatusCodes } from 'http-status-codes'
 
-import { createWorkspaceService, getAllWorspaceSerive } from '../services/workspace.service.js'
+import {
+  createWorkspaceService,
+  deleteWorkspaceService,
+  getAllWorspaceSerive
+} from '../services/workspace.service.js'
 import {
   customErrorResponse,
   internalServerError
@@ -19,7 +23,7 @@ export async function createWorkspaceController(req, res) {
         customSuccessResponse('Workspace created successfully 😃', response)
       )
   } catch (err) {
-    console.log(err);
+    console.log(err)
     if (err.statusCode) {
       res.status(err.statusCode).json(customErrorResponse(err))
     } else {
@@ -32,12 +36,40 @@ export async function createWorkspaceController(req, res) {
 
 export async function getAllWorkspaceController(req, res) {
   try {
-    const userId = req.user._id;
-    const resposne = await getAllWorspaceSerive(userId);
-    res.status(StatusCodes.OK).json(customSuccessResponse("All Workspace fetched successfully", resposne));
+    const userId = req.user._id
+    const resposne = await getAllWorspaceSerive(userId)
+    res
+      .status(StatusCodes.OK)
+      .json(
+        customSuccessResponse('All Workspace fetched successfully', resposne)
+      )
+  } catch (err) {
+    console.log(err)
+    if (err.statusCode) {
+      res.status(err.statusCode).json(customErrorResponse(err))
+    } else {
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json(internalServerError(err))
+    }
   }
-  catch(err){
-    console.log(err);
+}
+
+export async function deleteWorkspaceController(req, res) {
+  try {
+    const userId = req.user._id
+    const workspaceId = req.params.workspaceId
+    const deletedWorkspace = await deleteWorkspaceService(workspaceId, userId)
+    res
+      .status(StatusCodes.OK)
+      .json(
+        customSuccessResponse(
+          'Workspace deleted successfully',
+          deletedWorkspace
+        )
+      )
+  } catch (err) {
+    console.log(err)
     if (err.statusCode) {
       res.status(err.statusCode).json(customErrorResponse(err))
     } else {

@@ -8,7 +8,7 @@ function createJoinCode(length = 6) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength))
     counter += 1
   }
-  return result.toUpperCase();
+  return result.toUpperCase()
 }
 
 export default createJoinCode
