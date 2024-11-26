@@ -1,5 +1,6 @@
 import { StatusCodes } from 'http-status-codes'
 
+import channelRepo from '../repositories/channel.repo.js'
 import workspaceRepo from '../repositories/workspace.repo.js'
 import createJoinCode from '../utils/createJoinCode.js'
 
@@ -58,6 +59,7 @@ export async function deleteWorkspaceService(workspaceId, userId) {
       explanation: ['You are not athorized to delete this workspace']
     }
   }
+  await channelRepo.deleteManyByIds(workspace.channels);
   const response = await workspaceRepo.delete(workspaceId)
   return response
 }

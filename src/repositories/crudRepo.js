@@ -30,6 +30,14 @@ export default function crudRepo(model) {
         .skip((page - 1) * limit)
         .limit(limit)
       return docs
+    },
+    deleteManyByIds : async function (idsArray = []) {
+      const response = this.model.deleteMany({
+        _id : {
+          "$in" : idsArray
+        }
+      });
+      return response;
     }
   }
 }
