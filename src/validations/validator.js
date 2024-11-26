@@ -8,7 +8,6 @@ function validate(schema) {
       await schema.parseAsync(req.body)
       next()
     } catch (err) {
-      console.log(err.issues)
       const explanation = err.issues.map((issue) => {
         return issue.message
       })

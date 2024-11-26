@@ -20,8 +20,8 @@ pm.collectionVariables.set('slack_token', token)
 
 - This will add the token to the collection variables so that we can use it in the next request.
 
-
 ### Message model
+
 ```js
 
 const messageSchema = new mongoose.Schema({
@@ -49,3 +49,4 @@ const messageSchema = new mongoose.Schema({
     }]
 
 }, {timestamps : true})
+```
