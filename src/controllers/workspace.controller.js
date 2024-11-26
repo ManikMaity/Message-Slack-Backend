@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes'
 
-import { createWorkspaceService } from '../services/workspace.service.js'
+import { createWorkspaceService, getAllWorspaceSerive } from '../services/workspace.service.js'
 import {
   customErrorResponse,
   internalServerError
@@ -19,6 +19,24 @@ export async function createWorkspaceController(req, res) {
         customSuccessResponse('Workspace created successfully 😃', response)
       )
   } catch (err) {
+    console.log(err);
+    if (err.statusCode) {
+      res.status(err.statusCode).json(customErrorResponse(err))
+    } else {
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json(internalServerError(err))
+    }
+  }
+}
+
+export async function getAllWorkspaceController(req, res) {
+  try {
+    const userId = req.user._id;
+    const resposne = await getAllWorspaceSerive(userId);
+    res.status(StatusCodes.OK).json(customSuccessResponse("All Workspace fetched successfully", resposne));
+  }
+  catch(err){
     console.log(err);
     if (err.statusCode) {
       res.status(err.statusCode).json(customErrorResponse(err))

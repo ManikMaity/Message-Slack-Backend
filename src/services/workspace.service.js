@@ -1,4 +1,5 @@
 import { StatusCodes } from 'http-status-codes'
+
 import workspaceRepo from '../repositories/workspace.repo.js'
 import createJoinCode from '../utils/createJoinCode.js'
 
@@ -32,3 +33,12 @@ export async function createWorkspaceService(workspace) {
     }
  
 }
+
+export async function getAllWorspaceSerive(userId) {
+    const respose = await workspaceRepo.fetchAllWorkspacesByMemberId(userId);
+    return respose;
+}
+
+// export async function deleteWorkspaceService(workspaceId, userId) {
+//     const workspace = await workspaceRepo.getById(workspaceId);
+// }
