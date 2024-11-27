@@ -4,6 +4,7 @@ import {
   createWorkspaceController,
   deleteWorkspaceController,
   getAllWorkspaceController,
+  getWorkspaceController,
   updateWorkspaceController
 } from '../../../controllers/workspace.controller.js'
 import verifyToken from '../../../middlewares/authMiddleware.js'
@@ -23,5 +24,6 @@ workspaceRouter.post(
 workspaceRouter.get('/', verifyToken, getAllWorkspaceController)
 workspaceRouter.delete('/:workspaceId', verifyToken, deleteWorkspaceController)
 workspaceRouter.post("/update/:workspaceId", validate(updateWorkspaceSchema), verifyToken, updateWorkspaceController);
+workspaceRouter.get("/:workspaceId", verifyToken, getWorkspaceController);
 
 export default workspaceRouter

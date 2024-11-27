@@ -96,7 +96,26 @@ export async function updateWorkspaceService(workspaceId, data, userId) {
   return response
 }
 
-// export async function getWorkspaceService(workspaceId, userId) {}
+export async function getWorkspaceService(workspaceId, userId) {
+  const workspace = await workspaceRepo.getById(workspaceId);
+  if (!workspace) {
+    throw {
+      statusCode: StatusCodes.NOT_FOUND,
+      message: 'Workspace not found',
+      explanation: ['Workspace not found']
+    }
+  }
+  const isMember = workspace.members.find(member => member.member.toString() === userId.toString());
+  if (!isMember) {
+    throw {
+      statusCode: StatusCodes.UNAUTHORIZED,
+      message: 'You are not athorized to access this workspace',
+      explanation: ['You are not athorized to access this workspace']
+    }
+  }
+  
+  return workspace;
+}
 
 // export async function getWorkSpaceByJoinCodeService(joinCode) {}
 

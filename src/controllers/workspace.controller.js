@@ -4,6 +4,7 @@ import {
   createWorkspaceService,
   deleteWorkspaceService,
   getAllWorspaceSerive,
+  getWorkspaceService,
   updateWorkspaceService
 } from '../services/workspace.service.js'
 import {
@@ -83,14 +84,43 @@ export async function deleteWorkspaceController(req, res) {
 
 export async function updateWorkspaceController(req, res) {
   try {
+    const userId = req.user._id
+    const workspaceId = req.params.workspaceId
+    const updateData = req.body
+    const updatedWorkspace = await updateWorkspaceService(
+      workspaceId,
+      updateData,
+      userId
+    )
+    res
+      .status(StatusCodes.OK)
+      .json(
+        customSuccessResponse(
+          'Workspace updated successfully',
+          updatedWorkspace
+        )
+      )
+  } catch (err) {
+    console.log(err)
+    if (err.statusCode) {
+      res.status(err.statusCode).json(customErrorResponse(err))
+    } else {
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json(internalServerError(err))
+    }
+  }
+}
+
+export async function getWorkspaceController(req, res) {
+  try {
     const userId = req.user._id;
     const workspaceId = req.params.workspaceId;
-    const updateData = req.body;
-    const updatedWorkspace = await updateWorkspaceService(workspaceId, updateData, userId);
-    res.status(StatusCodes.OK).json(customSuccessResponse('Workspace updated successfully', updatedWorkspace));
-  }
+    const workspaceData = await getWorkspaceService(workspaceId, userId);
+    res.status(StatusCodes.OK).json(customSuccessResponse("Workspace fetched successfully", workspaceData));
+  } 
   catch (err) {
-    console.log(err);
+    console.log(err)
     if (err.statusCode) {
       res.status(err.statusCode).json(customErrorResponse(err))
     } else {
