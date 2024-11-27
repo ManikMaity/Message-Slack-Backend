@@ -20,3 +20,25 @@ export const workspaceSchema = z.object({
     invalid_type_error: 'image must be a string'
   })
 })
+
+
+export const updateWorkspaceSchema = z.object({
+  name: z
+    .string({
+      invalid_type_error: 'name must be a string'
+    })
+    .min(3, 'name must be at least 3 characters')
+    .max(50, 'name must be at most 50 characters')
+    .optional(),
+  description: z
+    .string({
+      invalid_type_error: 'description must be a string'
+    })
+    .min(3, 'description must be at least 3 characters')
+    .max(500, 'description must be at most 500 characters')
+    .optional(),
+  image: z.string({
+    invalid_type_error: 'image must be a string'
+  })
+  .optional()
+})

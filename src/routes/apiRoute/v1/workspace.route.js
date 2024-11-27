@@ -3,11 +3,12 @@ import { Router } from 'express'
 import {
   createWorkspaceController,
   deleteWorkspaceController,
-  getAllWorkspaceController
+  getAllWorkspaceController,
+  updateWorkspaceController
 } from '../../../controllers/workspace.controller.js'
 import verifyToken from '../../../middlewares/authMiddleware.js'
 import validate from '../../../validations/validator.js'
-import { workspaceSchema } from '../../../validations/workspace.validation.js'
+import { updateWorkspaceSchema, workspaceSchema } from '../../../validations/workspace.validation.js'
 const workspaceRouter = Router()
 
 workspaceRouter.get('/ping', (req, res) => {
@@ -21,5 +22,6 @@ workspaceRouter.post(
 )
 workspaceRouter.get('/', verifyToken, getAllWorkspaceController)
 workspaceRouter.delete('/:workspaceId', verifyToken, deleteWorkspaceController)
+workspaceRouter.post("/update/:workspaceId", validate(updateWorkspaceSchema), verifyToken, updateWorkspaceController);
 
 export default workspaceRouter

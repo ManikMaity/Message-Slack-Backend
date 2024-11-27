@@ -43,6 +43,13 @@ export async function getAllWorspaceSerive(userId) {
 
 export async function deleteWorkspaceService(workspaceId, userId) {
   const workspace = await workspaceRepo.getById(workspaceId)
+  if (!workspace) {
+    throw {
+      statusCode: StatusCodes.NOT_FOUND,
+      message: 'Workspace not found',
+      explanation: ['Workspace not found']
+    }
+  }
   const exitsAsAdmin = workspace.members.find((member) => {
     if (
       member.member.toString() === userId.toString() &&
@@ -59,7 +66,50 @@ export async function deleteWorkspaceService(workspaceId, userId) {
       explanation: ['You are not athorized to delete this workspace']
     }
   }
-  await channelRepo.deleteManyByIds(workspace.channels);
+  await channelRepo.deleteManyByIds(workspace.channels)
   const response = await workspaceRepo.delete(workspaceId)
   return response
 }
+
+export async function updateWorkspaceService(workspaceId, data, userId) {
+  const workspace = await workspaceRepo.getById(workspaceId)
+  if (!workspace) {
+    throw {
+      statusCode: StatusCodes.NOT_FOUND,
+      message: 'Workspace not found',
+      explanation: ['Workspace not found']
+    }
+  }
+
+  const isAdmin = workspace.members.find(
+    (member) =>
+      member.member.toString() == userId.toString() && member.role == 'admin'
+  )
+  if (!isAdmin) {
+    throw {
+      statusCode: StatusCodes.UNAUTHORIZED,
+      message: 'You are not athorized to update this workspace',
+      explanation: ['You are not athorized to update this workspace']
+    }
+  }
+  const response = await workspaceRepo.update(workspaceId, data)
+  return response
+}
+
+// export async function getWorkspaceService(workspaceId, userId) {}
+
+// export async function getWorkSpaceByJoinCodeService(joinCode) {}
+
+// export async function addMemberToWorkspaceService(workspaceId, userId, role) {}
+
+// export async function removeMemberFromWorkspaceService(
+//   workspaceId,
+//   memberId,
+//   userId
+// ) {}
+
+// export async function addChannelToWorkspaceService(
+//   workspaceId,
+//   channelName,
+//   userId
+// ) {}
