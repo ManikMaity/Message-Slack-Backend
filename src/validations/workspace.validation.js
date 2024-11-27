@@ -66,4 +66,18 @@ export const removeMemberSchema = z.object({
     required_error: 'workspaceId is required',
     invalid_type_error: 'workspaceId must be a string'
   })
+});
+
+
+export const addChannelSchema = z.object({
+  channelName : z.string({
+    required_error: 'channelName is required',
+    invalid_type_error: 'channelName must be a string'
+  }).min(3, 'channelName must be at least 3 characters')
+  .max(50, 'channelName must be at most 50 characters')
+  .trim(),
+  workspaceId: z.string({
+    required_error: 'workspaceId is required',
+    invalid_type_error: 'workspaceId must be a string'
+  })
 })

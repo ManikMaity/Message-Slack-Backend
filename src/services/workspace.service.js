@@ -4,6 +4,24 @@ import channelRepo from '../repositories/channel.repo.js'
 import workspaceRepo from '../repositories/workspace.repo.js'
 import createJoinCode from '../utils/createJoinCode.js'
 
+function isMemberOfWorkspace(workspace, userId) {
+  const isMember = workspace.members.find(member => member.member.toString() === userId.toString());
+  return isMember;
+}
+
+function isAdminOfWorkspace(workspace, userId) {
+  const isAdmin = workspace.members.find(
+    (member) =>
+      member.member.toString() == userId.toString() && member.role == 'admin'
+  )
+  return isAdmin
+}
+
+function isChannelAlreadyExits(workspace, channelName){
+  const exit = workspace.channels.find(channel => channel.name.toLowerCase() == channelName.toLowerCase());
+  return exit
+}
+
 export async function createWorkspaceService(workspace) {
   try {
     const joinCode = createJoinCode(6)
@@ -105,7 +123,7 @@ export async function getWorkspaceService(workspaceId, userId) {
       explanation: ['Workspace not found']
     }
   }
-  const isMember = workspace.members.find(member => member.member.toString() === userId.toString());
+  const isMember = isMemberOfWorkspace(workspace, userId);
   if (!isMember) {
     throw {
       statusCode: StatusCodes.UNAUTHORIZED,
@@ -139,10 +157,7 @@ export async function addMemberToWorkspaceService(workspaceId, userId, memberId,
     }
   }
 
-  const isAdmin = workspace.members.find(
-    (member) =>
-      member.member.toString() == userId.toString() && member.role == 'admin'
-  )
+  const isAdmin = isAdminOfWorkspace(workspace, userId);
 
   if (!isAdmin){
     throw {
@@ -165,10 +180,7 @@ export async function removeMemberFromWorkspaceService(workspaceId, memberId, us
       explanation: ['Workspace not found']
     }
   }
-  const isAdmin = workspace.members.find(
-    (member) =>
-      member.member.toString() == userId.toString() && member.role == 'admin'
-  )
+  const isAdmin = isAdminOfWorkspace(workspace, userId);
   if (!isAdmin) {
     throw {
       statusCode: StatusCodes.UNAUTHORIZED,
@@ -176,7 +188,7 @@ export async function removeMemberFromWorkspaceService(workspaceId, memberId, us
       explanation: ['You are not athorized to remove members from this workspace']
     }
   }
-  const isMemberExit = workspace.members.find(member => member.member.toString() === memberId.toString());
+  const isMemberExit = isMemberOfWorkspace(workspace, memberId);
   if (!isMemberExit) {
     throw {
       statusCode: StatusCodes.NOT_FOUND,
@@ -188,8 +200,37 @@ export async function removeMemberFromWorkspaceService(workspaceId, memberId, us
   return response;
 }
 
-// export async function addChannelToWorkspaceService(
-//   workspaceId,
-//   channelName,
-//   userId
-// ) {}
+export async function addChannelToWorkspaceService( workspaceId, userId, channelName) {
+  const workspace = await workspaceRepo.getWorkspaceDetailsById(workspaceId);
+  if (!workspace) {
+    throw {
+      statusCode: StatusCodes.NOT_FOUND,
+      message: 'Workspace not found',
+      explanation: ['Workspace not found']
+    }
+  }
+
+  const isAdmin = workspace.members.find(
+    (member) =>
+      member.member._id.toString() == userId.toString() && member.role == 'admin'
+  )
+
+  if (!isAdmin) {
+    throw {
+      statusCode: StatusCodes.UNAUTHORIZED,
+      message: 'You are not athorized to add channel to this workspace',
+      explanation: ['You are not athorized to add channel to this workspace']
+    }
+  }
+
+  const exit = isChannelAlreadyExits(workspace, channelName);
+  if (exit) {
+    throw {
+      statusCode: StatusCodes.BAD_REQUEST,
+      message: 'Channel already exists in workspace',
+      explanation: ['Channel already exists in workspace']
+    }
+  }
+  const response = await workspaceRepo.addChannelToWorkspace(workspaceId, channelName);
+  return response;
+}

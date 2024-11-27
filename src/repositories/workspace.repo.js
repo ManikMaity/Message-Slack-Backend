@@ -116,6 +116,20 @@ const workspaceRepo = {
       'members.member': memberId
     }).populate('members.member', 'username email avatar')
     return workspaces
+  },
+  getWorkspaceDetailsById: async (workspaceId) => {
+    const workspace = await WorkspaceModel.findById(workspaceId).populate(
+      'members.member',
+      'username email avatar'
+    ).populate('channels')
+    if (!workspace) {
+      throw new clientError({
+        message: 'Workspace not found',
+        explanation: 'Invailid data given',
+        statusCode: StatusCodes.NOT_FOUND
+      })
+    }
+    return workspace
   }
 }
 

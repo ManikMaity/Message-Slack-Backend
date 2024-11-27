@@ -1,6 +1,7 @@
 import { Router } from 'express'
 
 import {
+  addChannelToWorkspaceController,
   addMemberToWorkspaceController,
   createWorkspaceController,
   deleteWorkspaceController,
@@ -12,7 +13,7 @@ import {
 } from '../../../controllers/workspace.controller.js'
 import verifyToken from '../../../middlewares/authMiddleware.js'
 import validate from '../../../validations/validator.js'
-import { addMemberSchema, removeMemberSchema, updateWorkspaceSchema, workspaceSchema } from '../../../validations/workspace.validation.js'
+import { addChannelSchema, addMemberSchema, removeMemberSchema, updateWorkspaceSchema, workspaceSchema } from '../../../validations/workspace.validation.js'
 const workspaceRouter = Router()
 
 workspaceRouter.get('/ping', (req, res) => {
@@ -31,5 +32,6 @@ workspaceRouter.get("/:workspaceId", verifyToken, getWorkspaceController);
 workspaceRouter.get("/code/:joinCode", verifyToken, getWorkSpaceByJoinCodeController);
 workspaceRouter.put("/add-member", validate(addMemberSchema), verifyToken, addMemberToWorkspaceController);
 workspaceRouter.patch("/remove-member", validate(removeMemberSchema), verifyToken, removeMemberFromWorkspaceController);
+workspaceRouter.put("/add-channel", validate(addChannelSchema), verifyToken, addChannelToWorkspaceController);
 
 export default workspaceRouter
