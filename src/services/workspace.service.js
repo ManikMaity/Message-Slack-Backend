@@ -129,13 +129,43 @@ export async function getWorkSpaceByJoinCodeService(joinCode) {
   return workspace;
 }
 
-// export async function addMemberToWorkspaceService(workspaceId, userId, role) {}
+export async function addMemberToWorkspaceService(workspaceId, userId, memberId, role) {
+  const workspace = await workspaceRepo.getById(workspaceId);
+  if (!workspace) {
+    throw {
+      statusCode: StatusCodes.NOT_FOUND,
+      message: 'Workspace not found',
+      explanation: ['Workspace not found']
+    }
+  }
 
-// export async function removeMemberFromWorkspaceService(
-//   workspaceId,
-//   memberId,
-//   userId
-// ) {}
+  const isAdmin = workspace.members.find(
+    (member) =>
+      member.member.toString() == userId.toString() && member.role == 'admin'
+  )
+
+  if (!isAdmin){
+    throw {
+      statusCode: StatusCodes.UNAUTHORIZED,
+      message: 'You are not athorized to add members to this workspace',
+      explanation: ['You are not athorized to add members to this workspace']
+    }
+  }
+
+  const respose = await workspaceRepo.addMemberToWorkspace(workspaceId, memberId, role);
+  return respose
+}
+
+export async function removeMemberFromWorkspaceService(workspaceId, memberId, userId) {
+  const workspace = await workspaceRepo.getById(workspaceId);
+  if (!workspace) {
+    throw {
+      statusCode: StatusCodes.NOT_FOUND,
+      message: 'Workspace not found',
+      explanation: ['Workspace not found']
+    }
+  }
+}
 
 // export async function addChannelToWorkspaceService(
 //   workspaceId,

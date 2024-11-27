@@ -21,7 +21,6 @@ export const workspaceSchema = z.object({
   })
 })
 
-
 export const updateWorkspaceSchema = z.object({
   name: z
     .string({
@@ -41,4 +40,19 @@ export const updateWorkspaceSchema = z.object({
     invalid_type_error: 'image must be a string'
   })
   .optional()
+})
+
+export const addMemberSchema = z.object({
+  memberId: z.string({
+    required_error: 'memberId is required',
+    invalid_type_error: 'memberId must be a string'
+  }),
+  role: z.enum(['admin', 'member'], {
+    required_error: 'role is required',
+    invalid_type_error: 'role must be a string'
+  }),
+  workspaceId: z.string({
+    required_error: 'workspaceId is required',
+    invalid_type_error: 'workspaceId must be a string'
+  })
 })
