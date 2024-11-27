@@ -4,6 +4,7 @@ import {
   createWorkspaceService,
   deleteWorkspaceService,
   getAllWorspaceSerive,
+  getWorkSpaceByJoinCodeService,
   getWorkspaceService,
   updateWorkspaceService
 } from '../services/workspace.service.js'
@@ -119,6 +120,24 @@ export async function getWorkspaceController(req, res) {
     const workspaceData = await getWorkspaceService(workspaceId, userId);
     res.status(StatusCodes.OK).json(customSuccessResponse("Workspace fetched successfully", workspaceData));
   } 
+  catch (err) {
+    console.log(err)
+    if (err.statusCode) {
+      res.status(err.statusCode).json(customErrorResponse(err))
+    } else {
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json(internalServerError(err))
+    }
+  }
+}
+
+export async function getWorkSpaceByJoinCodeController(req, res) {
+  try {
+    const joinCode = req.params.joinCode;
+    const workspace = await getWorkSpaceByJoinCodeService(joinCode);
+    res.status(StatusCodes.OK).json(customSuccessResponse("Workspace fetched successfully by join code", workspace));
+  }
   catch (err) {
     console.log(err)
     if (err.statusCode) {

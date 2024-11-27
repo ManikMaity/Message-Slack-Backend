@@ -4,6 +4,7 @@ import {
   createWorkspaceController,
   deleteWorkspaceController,
   getAllWorkspaceController,
+  getWorkSpaceByJoinCodeController,
   getWorkspaceController,
   updateWorkspaceController
 } from '../../../controllers/workspace.controller.js'
@@ -25,5 +26,6 @@ workspaceRouter.get('/', verifyToken, getAllWorkspaceController)
 workspaceRouter.delete('/:workspaceId', verifyToken, deleteWorkspaceController)
 workspaceRouter.post("/update/:workspaceId", validate(updateWorkspaceSchema), verifyToken, updateWorkspaceController);
 workspaceRouter.get("/:workspaceId", verifyToken, getWorkspaceController);
+workspaceRouter.get("/code/:joinCode", verifyToken, getWorkSpaceByJoinCodeController);
 
 export default workspaceRouter

@@ -113,11 +113,21 @@ export async function getWorkspaceService(workspaceId, userId) {
       explanation: ['You are not athorized to access this workspace']
     }
   }
-  
+
   return workspace;
 }
 
-// export async function getWorkSpaceByJoinCodeService(joinCode) {}
+export async function getWorkSpaceByJoinCodeService(joinCode) {
+  const workspace = await workspaceRepo.getWorkspaceByJoinCode(joinCode);
+  if (!workspace){
+    throw {
+      statusCode : StatusCodes.NOT_FOUND,
+      message : "Workspace with this join code not found",
+      explanation : ["Workspace with this join code not found"]
+    }
+  }
+  return workspace;
+}
 
 // export async function addMemberToWorkspaceService(workspaceId, userId, role) {}
 
