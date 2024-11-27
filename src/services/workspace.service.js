@@ -165,6 +165,27 @@ export async function removeMemberFromWorkspaceService(workspaceId, memberId, us
       explanation: ['Workspace not found']
     }
   }
+  const isAdmin = workspace.members.find(
+    (member) =>
+      member.member.toString() == userId.toString() && member.role == 'admin'
+  )
+  if (!isAdmin) {
+    throw {
+      statusCode: StatusCodes.UNAUTHORIZED,
+      message: 'You are not athorized to remove members from this workspace',
+      explanation: ['You are not athorized to remove members from this workspace']
+    }
+  }
+  const isMemberExit = workspace.members.find(member => member.member.toString() === memberId.toString());
+  if (!isMemberExit) {
+    throw {
+      statusCode: StatusCodes.NOT_FOUND,
+      message: 'Member not found in this workspace',
+      explanation: ['Member not found in this workspace']
+    }
+  }
+  const response = await workspaceRepo.removeMemberFromWorkspace(workspaceId, memberId);
+  return response;
 }
 
 // export async function addChannelToWorkspaceService(

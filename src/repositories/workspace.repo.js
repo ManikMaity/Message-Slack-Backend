@@ -61,6 +61,31 @@ const workspaceRepo = {
     await workspace.save()
     return workspace
   },
+  removeMemberFromWorkspace: async (workspaceId, userId) => {
+    const workspace = await WorkspaceModel.findById(workspaceId)
+    if (!workspace) {
+      throw new clientError({
+        message: 'Workspace not found',
+        explanation: 'Invailid data given',
+        statusCode: StatusCodes.NOT_FOUND
+      })
+    }
+    const exitingMember = workspace.members.find(
+      (member) => member.member.toString() === userId.toString()
+    )
+    if (!exitingMember) {
+      throw new clientError({
+        message: 'User not found in workspace',
+        explanation: 'User not found in workspace',
+        statusCode: StatusCodes.BAD_REQUEST
+      })
+    }
+    workspace.members = workspace.members.filter(
+      (member) => member.member.toString() !== userId.toString()
+    )
+    await workspace.save()
+    return workspace
+  },
   addChannelToWorkspace: async (workspaceId, channelName) => {
     const workspace =
       await WorkspaceModel.findById(workspaceId).populate('channels')

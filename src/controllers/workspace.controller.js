@@ -7,6 +7,7 @@ import {
   getAllWorspaceSerive,
   getWorkSpaceByJoinCodeService,
   getWorkspaceService,
+  removeMemberFromWorkspaceService,
   updateWorkspaceService
 } from '../services/workspace.service.js'
 import {
@@ -157,6 +158,25 @@ export async function addMemberToWorkspaceController(req, res) {
     const {memberId, role, workspaceId} = req.body;
     const workspace = await addMemberToWorkspaceService(workspaceId, userId, memberId, role);
     res.status(StatusCodes.OK).json(customSuccessResponse("Member added to workspace successfully", workspace));
+  }
+  catch (err) {
+    console.log(err)
+    if (err.statusCode) {
+      res.status(err.statusCode).json(customErrorResponse(err))
+    } else {
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json(internalServerError(err))
+    }
+  }
+}
+
+export async function removeMemberFromWorkspaceController(req, res) {
+  try {
+    const userId = req.user._id;
+    const {memberId, workspaceId} = req.body;
+    const workspace = await removeMemberFromWorkspaceService(workspaceId, memberId, userId);
+    res.status(StatusCodes.OK).json(customSuccessResponse("Member removed from workspace successfully", workspace));
   }
   catch (err) {
     console.log(err)
