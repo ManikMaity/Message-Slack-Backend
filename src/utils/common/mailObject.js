@@ -1,4 +1,3 @@
-import { text } from "express";
 import { MAIL_ID } from "../../config/variables.js";
 
 export const mailObject = {
