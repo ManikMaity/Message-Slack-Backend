@@ -3,6 +3,8 @@ import { StatusCodes } from 'http-status-codes'
 import channelRepo from '../repositories/channel.repo.js'
 import workspaceRepo from '../repositories/workspace.repo.js'
 import createJoinCode from '../utils/createJoinCode.js'
+import UserModel from '../schema/user.schema.js';
+import userRepo from '../repositories/user.repo.js';
 
 function isMemberOfWorkspace(workspace, userId) {
   const isMember = workspace.members.find(member => member.member.toString() === userId.toString());
@@ -147,7 +149,27 @@ export async function getWorkSpaceByJoinCodeService(joinCode) {
   return workspace;
 }
 
-export async function addMemberToWorkspaceService(workspaceId, userId, memberId, role) {
+export async function addMemberToWorkspaceService(workspaceId, userId, memberId, role, email = "") {
+  if (!memberId && !email) {
+    throw {
+      statusCode: StatusCodes.BAD_REQUEST,
+      message: 'Member id or email is required',
+      explanation: ['Member id or email is required']
+    }
+  }
+
+  if (!memberId){
+    const member = await userRepo.getUserByEmail(email);
+    if (!member) {
+      throw {
+        statusCode: StatusCodes.NOT_FOUND,
+        message: 'User not found with this email',
+        explanation: ['User not found with this email']
+      }
+    }
+    memberId = member._id
+  }
+
   const workspace = await workspaceRepo.getById(workspaceId);
   if (!workspace) {
     throw {

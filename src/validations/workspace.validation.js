@@ -1,3 +1,4 @@
+import e from 'express';
 import { z } from 'zod'
 
 export const workspaceSchema = z.object({
@@ -44,9 +45,8 @@ export const updateWorkspaceSchema = z.object({
 
 export const addMemberSchema = z.object({
   memberId: z.string({
-    required_error: 'memberId is required',
     invalid_type_error: 'memberId must be a string'
-  }),
+  }).optional(),
   role: z.enum(['admin', 'member'], {
     required_error: 'role is required',
     invalid_type_error: 'role must be a string'
@@ -54,7 +54,10 @@ export const addMemberSchema = z.object({
   workspaceId: z.string({
     required_error: 'workspaceId is required',
     invalid_type_error: 'workspaceId must be a string'
-  })
+  }),
+  email: z.string({
+    invalid_type_error: 'email must be a string'
+  }).email("invalid email format").optional()
 })
 
 export const removeMemberSchema = z.object({

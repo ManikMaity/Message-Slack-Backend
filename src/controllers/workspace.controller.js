@@ -156,8 +156,8 @@ export async function getWorkSpaceByJoinCodeController(req, res) {
 export async function addMemberToWorkspaceController(req, res) {
   try{
     const userId = req.user._id;
-    const {memberId, role, workspaceId} = req.body;
-    const workspace = await addMemberToWorkspaceService(workspaceId, userId, memberId, role);
+    const {memberId, role, workspaceId, email} = req.body;
+    const workspace = await addMemberToWorkspaceService(workspaceId, userId, memberId, role, email);
     res.status(StatusCodes.OK).json(customSuccessResponse("Member added to workspace successfully", workspace));
   }
   catch (err) {
