@@ -1,12 +1,11 @@
 import { StatusCodes } from 'http-status-codes'
 
 import channelRepo from '../repositories/channel.repo.js'
+import userRepo from '../repositories/user.repo.js';
 import workspaceRepo from '../repositories/workspace.repo.js'
 import createJoinCode from '../utils/createJoinCode.js'
-import UserModel from '../schema/user.schema.js';
-import userRepo from '../repositories/user.repo.js';
 
-function isMemberOfWorkspace(workspace, userId) {
+export function isMemberOfWorkspace(workspace, userId) {
   const isMember = workspace.members.find(member => member.member.toString() === userId.toString());
   return isMember;
 }
