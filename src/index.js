@@ -17,8 +17,7 @@ app.get('/ping', (req, res) => {
 })
 app.use('/api', apiRouter)
 
-await connectDB()
-
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+  await connectDB()
   console.log(`Server is running on port http://localhost:${PORT}`)
 })

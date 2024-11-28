@@ -50,3 +50,10 @@ const messageSchema = new mongoose.Schema({
 
 }, {timestamps : true})
 ```
+
+
+## Setup nodemailer
+- NodeMailer is a package for sending emails.
+- `npm install nodemailer`
+- [Atricle to Setup](https://medium.com/@y.mehnati_49486/how-to-send-an-email-from-your-gmail-account-with-nodemailer-837bf09a7628)
+- [Create App Password For Gmail Link](https://myaccount.google.com/apppasswords?pli=1&rapt=AEjHL4PjZPv_RFzLvDpJpgNezLLlTZ-eKcC011hXQB6Mh7gjQFn1dLrq76bIrxMqjz4JbJ6YTbapvSKegaX1_YU3qxI-yUuzG_4l33osM5Z6PusG9P2bQyQ)
