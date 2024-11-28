@@ -106,7 +106,7 @@ const workspaceRepo = {
         statusCode: StatusCodes.BAD_REQUEST
       })
     }
-    const channel = await channelRepo.create({ name: channelName })
+    const channel = await channelRepo.create({ name: channelName, workspaceId })
     workspace.channels.push(channel)
     await workspace.save()
     return workspace
