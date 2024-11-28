@@ -1,13 +1,17 @@
 import { StatusCodes } from 'http-status-codes'
 
+import { addEmailToQueue } from '../producers/mailQueue.producer.js'
 import channelRepo from '../repositories/channel.repo.js'
-import userRepo from '../repositories/user.repo.js';
+import userRepo from '../repositories/user.repo.js'
 import workspaceRepo from '../repositories/workspace.repo.js'
+import { createJoinWorkspaceMail } from '../utils/common/mailObject.js'
 import createJoinCode from '../utils/createJoinCode.js'
 
 export function isMemberOfWorkspace(workspace, userId) {
-  const isMember = workspace.members.find(member => member.member.toString() === userId.toString());
-  return isMember;
+  const isMember = workspace.members.find(
+    (member) => member.member.toString() === userId.toString()
+  )
+  return isMember
 }
 
 function isAdminOfWorkspace(workspace, userId) {
@@ -18,8 +22,10 @@ function isAdminOfWorkspace(workspace, userId) {
   return isAdmin
 }
 
-function isChannelAlreadyExits(workspace, channelName){
-  const exit = workspace.channels.find(channel => channel.name.toLowerCase() == channelName.toLowerCase());
+function isChannelAlreadyExits(workspace, channelName) {
+  const exit = workspace.channels.find(
+    (channel) => channel.name.toLowerCase() == channelName.toLowerCase()
+  )
   return exit
 }
 
@@ -116,7 +122,7 @@ export async function updateWorkspaceService(workspaceId, data, userId) {
 }
 
 export async function getWorkspaceService(workspaceId, userId) {
-  const workspace = await workspaceRepo.getById(workspaceId);
+  const workspace = await workspaceRepo.getById(workspaceId)
   if (!workspace) {
     throw {
       statusCode: StatusCodes.NOT_FOUND,
@@ -124,7 +130,7 @@ export async function getWorkspaceService(workspaceId, userId) {
       explanation: ['Workspace not found']
     }
   }
-  const isMember = isMemberOfWorkspace(workspace, userId);
+  const isMember = isMemberOfWorkspace(workspace, userId)
   if (!isMember) {
     throw {
       statusCode: StatusCodes.UNAUTHORIZED,
@@ -133,22 +139,28 @@ export async function getWorkspaceService(workspaceId, userId) {
     }
   }
 
-  return workspace;
+  return workspace
 }
 
 export async function getWorkSpaceByJoinCodeService(joinCode) {
-  const workspace = await workspaceRepo.getWorkspaceByJoinCode(joinCode);
-  if (!workspace){
+  const workspace = await workspaceRepo.getWorkspaceByJoinCode(joinCode)
+  if (!workspace) {
     throw {
-      statusCode : StatusCodes.NOT_FOUND,
-      message : "Workspace with this join code not found",
-      explanation : ["Workspace with this join code not found"]
+      statusCode: StatusCodes.NOT_FOUND,
+      message: 'Workspace with this join code not found',
+      explanation: ['Workspace with this join code not found']
     }
   }
-  return workspace;
+  return workspace
 }
 
-export async function addMemberToWorkspaceService(workspaceId, userId, memberId, role, email = "") {
+export async function addMemberToWorkspaceService(
+  workspaceId,
+  userId,
+  memberId,
+  role,
+  email = ''
+) {
   if (!memberId && !email) {
     throw {
       statusCode: StatusCodes.BAD_REQUEST,
@@ -157,8 +169,10 @@ export async function addMemberToWorkspaceService(workspaceId, userId, memberId,
     }
   }
 
-  if (!memberId){
-    const member = await userRepo.getUserByEmail(email);
+  let user
+
+  if (!memberId) {
+    const member = await userRepo.getUserByEmail(email)
     if (!member) {
       throw {
         statusCode: StatusCodes.NOT_FOUND,
@@ -166,10 +180,20 @@ export async function addMemberToWorkspaceService(workspaceId, userId, memberId,
         explanation: ['User not found with this email']
       }
     }
+    user = member
     memberId = member._id
+  } else {
+    user = await userRepo.getById(memberId)
+    if (!user) {
+      throw {
+        statusCode: StatusCodes.NOT_FOUND,
+        message: 'User not found with this id',
+        explanation: ['User not found with this id']
+      }
+    }
   }
 
-  const workspace = await workspaceRepo.getById(workspaceId);
+  const workspace = await workspaceRepo.getById(workspaceId)
   if (!workspace) {
     throw {
       statusCode: StatusCodes.NOT_FOUND,
@@ -178,22 +202,30 @@ export async function addMemberToWorkspaceService(workspaceId, userId, memberId,
     }
   }
 
-  const isAdmin = isAdminOfWorkspace(workspace, userId);
+  const isAdmin = isAdminOfWorkspace(workspace, userId)
 
-  if (!isAdmin){
+  if (!isAdmin) {
     throw {
       statusCode: StatusCodes.UNAUTHORIZED,
       message: 'You are not athorized to add members to this workspace',
       explanation: ['You are not athorized to add members to this workspace']
     }
   }
-
-  const respose = await workspaceRepo.addMemberToWorkspace(workspaceId, memberId, role);
+  const respose = await workspaceRepo.addMemberToWorkspace(
+    workspaceId,
+    memberId,
+    role
+  )
+  addEmailToQueue(createJoinWorkspaceMail(workspace.name, user.email));
   return respose
 }
 
-export async function removeMemberFromWorkspaceService(workspaceId, memberId, userId) {
-  const workspace = await workspaceRepo.getById(workspaceId);
+export async function removeMemberFromWorkspaceService(
+  workspaceId,
+  memberId,
+  userId
+) {
+  const workspace = await workspaceRepo.getById(workspaceId)
   if (!workspace) {
     throw {
       statusCode: StatusCodes.NOT_FOUND,
@@ -201,15 +233,17 @@ export async function removeMemberFromWorkspaceService(workspaceId, memberId, us
       explanation: ['Workspace not found']
     }
   }
-  const isAdmin = isAdminOfWorkspace(workspace, userId);
+  const isAdmin = isAdminOfWorkspace(workspace, userId)
   if (!isAdmin) {
     throw {
       statusCode: StatusCodes.UNAUTHORIZED,
       message: 'You are not athorized to remove members from this workspace',
-      explanation: ['You are not athorized to remove members from this workspace']
+      explanation: [
+        'You are not athorized to remove members from this workspace'
+      ]
     }
   }
-  const isMemberExit = isMemberOfWorkspace(workspace, memberId);
+  const isMemberExit = isMemberOfWorkspace(workspace, memberId)
   if (!isMemberExit) {
     throw {
       statusCode: StatusCodes.NOT_FOUND,
@@ -217,12 +251,19 @@ export async function removeMemberFromWorkspaceService(workspaceId, memberId, us
       explanation: ['Member not found in this workspace']
     }
   }
-  const response = await workspaceRepo.removeMemberFromWorkspace(workspaceId, memberId);
-  return response;
+  const response = await workspaceRepo.removeMemberFromWorkspace(
+    workspaceId,
+    memberId
+  )
+  return response
 }
 
-export async function addChannelToWorkspaceService( workspaceId, userId, channelName) {
-  const workspace = await workspaceRepo.getWorkspaceDetailsById(workspaceId);
+export async function addChannelToWorkspaceService(
+  workspaceId,
+  userId,
+  channelName
+) {
+  const workspace = await workspaceRepo.getWorkspaceDetailsById(workspaceId)
   if (!workspace) {
     throw {
       statusCode: StatusCodes.NOT_FOUND,
@@ -233,7 +274,8 @@ export async function addChannelToWorkspaceService( workspaceId, userId, channel
 
   const isAdmin = workspace.members.find(
     (member) =>
-      member.member._id.toString() == userId.toString() && member.role == 'admin'
+      member.member._id.toString() == userId.toString() &&
+      member.role == 'admin'
   )
 
   if (!isAdmin) {
@@ -244,7 +286,7 @@ export async function addChannelToWorkspaceService( workspaceId, userId, channel
     }
   }
 
-  const exit = isChannelAlreadyExits(workspace, channelName);
+  const exit = isChannelAlreadyExits(workspace, channelName)
   if (exit) {
     throw {
       statusCode: StatusCodes.BAD_REQUEST,
@@ -252,6 +294,9 @@ export async function addChannelToWorkspaceService( workspaceId, userId, channel
       explanation: ['Channel already exists in workspace']
     }
   }
-  const response = await workspaceRepo.addChannelToWorkspace(workspaceId, channelName);
-  return response;
+  const response = await workspaceRepo.addChannelToWorkspace(
+    workspaceId,
+    channelName
+  )
+  return response
 }

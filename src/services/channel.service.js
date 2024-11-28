@@ -24,3 +24,4 @@ export async function getChannelByIdService(channelId, userId) {
     
     return channel;
 }
+

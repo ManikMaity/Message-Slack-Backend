@@ -23,4 +23,3 @@ export function createMailerOption(receiverEmail, subject, bodyText) {
 }
 
 export default transporter;
-
