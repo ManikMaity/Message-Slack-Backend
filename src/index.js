@@ -1,21 +1,10 @@
-import { createBullBoard } from '@bull-board/api';
-import { BullAdapter } from '@bull-board/api/bullAdapter.js';
-import { ExpressAdapter } from '@bull-board/express'
 import express from 'express'
 import statusCodes from 'http-status-codes'
 
 import connectDB from './config/db.config.js'
 import { PORT } from './config/variables.js'
-import mailQueue from './queues/mail.queue.js'
 import apiRouter from './routes/apiRoute/api.route.js'
-
-const serverAdapter = new ExpressAdapter();
-serverAdapter.setBasePath('/admin/queues');
-
-createBullBoard({
-  queues: [new BullAdapter(mailQueue)],
-  serverAdapter: serverAdapter,
-});
+import serverAdapter from './config/bullBorad.config.js'
 
 const app = express()
 app.use(express.json())
