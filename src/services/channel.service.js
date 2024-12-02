@@ -1,6 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 
 import channelRepo from "../repositories/channel.repo.js";
+import messageRepo from "../repositories/message.repo.js";
 import { isMemberOfWorkspace } from "./workspace.service.js";
 
 export async function getChannelByIdService(channelId, userId) {
@@ -12,7 +13,7 @@ export async function getChannelByIdService(channelId, userId) {
             explanation: ['Channel not found']
         }
     }
-
+    
     const isMember = isMemberOfWorkspace(channel.workspaceId, userId);
     if (!isMember) {
         throw {
@@ -21,7 +22,16 @@ export async function getChannelByIdService(channelId, userId) {
             explanation: ['You are not athorized to access this channel']
         }
     }
-    
-    return channel;
+
+    const channelMessages = await messageRepo.getMessagePaginated({channelId}, 1, 20);
+
+    return {
+        _id : channel._id,
+        name : channel.name,
+        workspaceId : channel.workspaceId,
+        createdAt : channel.createdAt,
+        updatedAt : channel.updatedAt,
+        messages : channelMessages
+    };
 }
 

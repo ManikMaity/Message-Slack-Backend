@@ -6,9 +6,9 @@ import { Server } from 'socket.io';
 import serverAdapter from './config/bullBorad.config.js'
 import connectDB from './config/db.config.js'
 import { PORT } from './config/variables.js'
+import channelMessageHandler from './controllers/channelSocket.controller.js';
 import { messageHandler } from './controllers/messageSocket.controller.js'
 import apiRouter from './routes/apiRoute/api.route.js'
-import channelMessageHandler from './controllers/channelSocket.controller.js';
 
 
 
