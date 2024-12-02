@@ -1,7 +1,8 @@
 import { StatusCodes } from "http-status-codes";
+
 import { isUserPartOfWorkspaceService } from "../services/member.service.js";
-import { customSuccessResponse } from "../utils/successResponseObj.js";
 import { customErrorResponse, internalServerError } from "../utils/customErrorResponse.js";
+import { customSuccessResponse } from "../utils/successResponseObj.js";
 
 export async function isUserPartOfWorkspaceController(req, res) {
     try {

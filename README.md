@@ -125,3 +125,5 @@ mailQueue.process(async (job) => {
 // ./producers/mailQueue.producer.js
 import "../processors/mail.processor.js"
 ```
+
+## Web Socket

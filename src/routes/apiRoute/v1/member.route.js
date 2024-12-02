@@ -1,6 +1,7 @@
 import { Router } from 'express'
-import verifyToken from '../../../middlewares/authMiddleware.js';
+
 import { isUserPartOfWorkspaceController } from '../../../controllers/member.controller.js';
+import verifyToken from '../../../middlewares/authMiddleware.js';
 const memberRouter = Router();
 
 

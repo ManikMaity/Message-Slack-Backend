@@ -1,4 +1,5 @@
 import { StatusCodes } from 'http-status-codes'
+import mongoose from 'mongoose'
 
 import UserModel from '../schema/user.schema.js'
 import WorkspaceModel from '../schema/workspace.schema.js'
@@ -122,6 +123,19 @@ const workspaceRepo = {
       'members.member',
       'username email avatar'
     ).populate('channels')
+    if (!workspace) {
+      throw new clientError({
+        message: 'Workspace not found',
+        explanation: 'Invailid data given',
+        statusCode: StatusCodes.NOT_FOUND
+      })
+    }
+    return workspace
+  },
+  getWorkspaceFromChannelId: async (channelId) => {
+    const workspace = await WorkspaceModel.findOne({
+      channels: new mongoose.Types.ObjectId(channelId)
+    });
     if (!workspace) {
       throw new clientError({
         message: 'Workspace not found',
