@@ -1,6 +1,10 @@
 import { StatusCodes } from 'http-status-codes'
 
-import { signinService, signupService } from '../services/user.service.js'
+import {
+  forgetPasswordService,
+  signinService,
+  signupService
+} from '../services/user.service.js'
 import {
   customErrorResponse,
   internalServerError
@@ -32,6 +36,26 @@ export const signinController = async (req, res) => {
     res
       .status(StatusCodes.OK)
       .json(customSuccessResponse('User signed in successfully', data))
+  } catch (err) {
+    if (err.statusCode) {
+      res.status(err.statusCode).json(customErrorResponse(err))
+    } else {
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json(internalServerError(err))
+    }
+  }
+}
+
+export const forgetPasswordController = async (req, res) => {
+  try {
+    const { email } = req.body
+    const response = await forgetPasswordService(email)
+    res
+      .status(StatusCodes.OK)
+      .json(
+        customSuccessResponse('Password reset link sent successfully', response)
+      )
   } catch (err) {
     if (err.statusCode) {
       res.status(err.statusCode).json(customErrorResponse(err))
