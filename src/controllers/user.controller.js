@@ -2,6 +2,7 @@ import { StatusCodes } from 'http-status-codes'
 
 import {
   forgetPasswordService,
+  resetPasswordService,
   signinService,
   signupService
 } from '../services/user.service.js'
@@ -56,6 +57,24 @@ export const forgetPasswordController = async (req, res) => {
       .json(
         customSuccessResponse('Password reset link sent successfully', response)
       )
+  } catch (err) {
+    if (err.statusCode) {
+      res.status(err.statusCode).json(customErrorResponse(err))
+    } else {
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json(internalServerError(err))
+    }
+  }
+}
+
+export const resetPasswordController = async (req, res) => {
+  try {
+    const { hash, password } = req.body
+    const response = await resetPasswordService(password, hash)
+    res
+      .status(StatusCodes.OK)
+      .json(customSuccessResponse('Password reset successfully', response))
   } catch (err) {
     if (err.statusCode) {
       res.status(err.statusCode).json(customErrorResponse(err))

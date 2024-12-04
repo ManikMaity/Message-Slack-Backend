@@ -6,7 +6,11 @@ const forgetPasswordRepo = {
   getForgetPasswordByEmail: async function (email) {
       const forgetPassword = await ForgetPasswordModel.findOne({ email });
       return forgetPassword;
+  },
+  getForgetPasswordByHash : async function (hash) {
+    const forgetPassword = await ForgetPasswordModel.findOne({ hash });
+    return forgetPassword;
   }
-}
+};
 
 export default forgetPasswordRepo;

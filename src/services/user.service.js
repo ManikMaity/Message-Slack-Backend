@@ -3,7 +3,7 @@ import { StatusCodes } from 'http-status-codes'
 import jwt from 'jsonwebtoken'
 
 import transporter from '../config/mail.config.js'
-import { JWT_SECRET } from '../config/variables.js'
+import { JWT_SECRET, SALT_ROUND } from '../config/variables.js'
 import forgetPasswordRepo from '../repositories/forgetPassword.repo.js'
 import userRepo from '../repositories/user.repo.js'
 import { createForgetPasswordMail } from '../utils/common/mailObject.js'
@@ -80,6 +80,7 @@ export async function forgetPasswordService(email) {
     await forgetPasswordRepo.create({ email, hash, user: user._id })
   }
 
+  // eslint-disable-next-line no-unused-vars
   const respose = await transporter.sendMail(
     createForgetPasswordMail(email, hash)
   )
@@ -87,4 +88,26 @@ export async function forgetPasswordService(email) {
   return {
     message: `Email sent successfully to ${email}`
   }
+}
+
+export async function resetPasswordService(password, hash) {
+  const forgetPassword = await forgetPasswordRepo.getForgetPasswordByHash(hash)
+
+  if (!forgetPassword) {
+    throw {
+      statusCode: StatusCodes.NOT_FOUND,
+      message: 'This forget password hash is not valid',
+      explanation: ['This forget password hash is not valid']
+    }
+  }
+
+  const encryptedPassword = bcrypt.hashSync(password, SALT_ROUND)
+
+  const user = await userRepo.update(forgetPassword.user, {
+    password: encryptedPassword
+  })
+
+  await forgetPasswordRepo.delete(forgetPassword._id)
+
+  return user
 }
