@@ -14,6 +14,13 @@ export function isMemberOfWorkspace(workspace, userId) {
   return isMember
 }
 
+export function isMemberOfWorkspacePopulated(workspace, userId) {
+  const isMember = workspace.members.find(
+    (member) => member?.member?._id.toString() === userId.toString()
+  )
+  return isMember
+}
+
 function isAdminOfWorkspace(workspace, userId) {
   const isAdmin = workspace.members.find(
     (member) =>
@@ -122,7 +129,7 @@ export async function updateWorkspaceService(workspaceId, data, userId) {
 }
 
 export async function getWorkspaceService(workspaceId, userId) {
-  const workspace = await workspaceRepo.getById(workspaceId)
+  const workspace = await workspaceRepo.getWorkspaceDetailsById(workspaceId)
   if (!workspace) {
     throw {
       statusCode: StatusCodes.NOT_FOUND,
@@ -130,7 +137,7 @@ export async function getWorkspaceService(workspaceId, userId) {
       explanation: ['Workspace not found']
     }
   }
-  const isMember = isMemberOfWorkspace(workspace, userId)
+  const isMember = isMemberOfWorkspacePopulated(workspace, userId)
   if (!isMember) {
     throw {
       statusCode: StatusCodes.UNAUTHORIZED,

@@ -119,10 +119,10 @@ const workspaceRepo = {
     return workspaces
   },
   getWorkspaceDetailsById: async (workspaceId) => {
-    const workspace = await WorkspaceModel.findById(workspaceId).populate(
+    const workspace = await WorkspaceModel.findById(workspaceId).populate('channels').populate(
       'members.member',
       'username email avatar'
-    ).populate('channels')
+    )
     if (!workspace) {
       throw new clientError({
         message: 'Workspace not found',
