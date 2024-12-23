@@ -144,6 +144,15 @@ const workspaceRepo = {
       })
     }
     return workspace
+  },
+  changeWorkspaceJoinCode : async (workspaceId, joinCode) => {
+    const workspace = await WorkspaceModel.findById(workspaceId).populate('channels').populate(
+      'members.member',
+      'username email avatar'
+    )
+    workspace.joinCode = joinCode;
+    await workspace.save();
+    return workspace;
   }
 }
 

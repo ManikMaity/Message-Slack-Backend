@@ -223,7 +223,7 @@ export async function addMemberToWorkspaceService(
     memberId,
     role
   )
-  addEmailToQueue(createJoinWorkspaceMail(workspace.name, user.email));
+  addEmailToQueue(createJoinWorkspaceMail(workspace.name, user.email))
   return respose
 }
 
@@ -308,3 +308,51 @@ export async function addChannelToWorkspaceService(
   return response
 }
 
+export async function changeWorkspaceJoinCodeService(workspaceId, userId) {
+  const workspace = await workspaceRepo.getById(workspaceId)
+  if (!workspace) {
+    throw {
+      statusCode: StatusCodes.NOT_FOUND,
+      message: 'Workspace not found',
+      explanation: ['Workspace not found']
+    }
+  }
+
+  const isAdmin = isAdminOfWorkspace(workspace, userId)
+
+  if (!isAdmin) {
+    throw {
+      statusCode: StatusCodes.UNAUTHORIZED,
+      message: 'You are not authorized to change workspace join code',
+      explanation: ['You are not authorized to change workspace join code']
+    }
+  }
+
+  const joinCode = createJoinCode()
+  const response = await workspaceRepo.changeWorkspaceJoinCode(
+    workspaceId,
+    joinCode
+  )
+
+  return response
+}
+
+export async function joinWorkspaceByCodeService(user, joinCode) {
+  const workspace = await workspaceRepo.getWorkspaceByJoinCode(joinCode)
+  if (!workspace) {
+    throw {
+      statusCode: StatusCodes.NOT_FOUND,
+      message: 'Workspace not found',
+      explanation: ['Workspace not found']
+    }
+  }
+
+  const response = workspaceRepo.addMemberToWorkspace(
+    workspace._id,
+    user._id,
+    'member'
+  )
+
+  addEmailToQueue(createJoinWorkspaceMail(workspace.name, user.email))
+  return response
+}

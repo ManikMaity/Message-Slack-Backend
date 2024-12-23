@@ -3,11 +3,13 @@ import { StatusCodes } from 'http-status-codes'
 import {
   addChannelToWorkspaceService,
   addMemberToWorkspaceService,
+  changeWorkspaceJoinCodeService,
   createWorkspaceService,
   deleteWorkspaceService,
   getAllWorspaceSerive,
   getWorkSpaceByJoinCodeService,
   getWorkspaceService,
+  joinWorkspaceByCodeService,
   removeMemberFromWorkspaceService,
   updateWorkspaceService
 } from '../services/workspace.service.js'
@@ -199,6 +201,45 @@ export async function addChannelToWorkspaceController(req, res) {
     res.status(StatusCodes.OK).json(customSuccessResponse(`${channelName} channel added to workspace successfully`, resposne));
   }
   catch (err) {
+    console.log(err)
+    if (err.statusCode) {
+      res.status(err.statusCode).json(customErrorResponse(err))
+    } else {
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json(internalServerError(err))
+    }
+  }
+}
+
+
+export async function changeWorkspaceJoinCodeController(req, res) {
+  try {
+    const userId = req.user._id;
+    const workspaceId = req.params.workspaceId;
+    const workspace = await changeWorkspaceJoinCodeService(workspaceId, userId);
+    res.status(StatusCodes.OK).json(customSuccessResponse("Workspace join code changed successfully", workspace));
+  }
+  catch (err) {
+    console.log(err)
+    if (err.statusCode) {
+      res.status(err.statusCode).json(customErrorResponse(err))
+    } else {
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json(internalServerError(err))
+    }
+  }
+}
+
+export async function joinWorkspaceByCodeController(req, res) {
+  try {
+    const code = req.params.joinCode;
+    const user = req.user;
+    const workspace = await joinWorkspaceByCodeService(user, code);
+    res.status(StatusCodes.OK).json(customSuccessResponse("Added in the workspace", workspace));
+  }
+  catch(err){
     console.log(err)
     if (err.statusCode) {
       res.status(err.statusCode).json(customErrorResponse(err))
