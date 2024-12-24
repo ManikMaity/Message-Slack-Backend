@@ -12,3 +12,4 @@ export const MAIL_ID = process.env.MAIL_ID;
 export const RADIS_HOST = process.env.RADIS_HOST || 'localhost';
 export const RADIS_PORT = process.env.RADIS_PORT;
 export const CLIENT_URL = process.env.CLIENT_URL;
+export const ENABLE_EMAIL_VERIFICATION = process.env.ENABLE_EMAIL_VARIFICATION || false;

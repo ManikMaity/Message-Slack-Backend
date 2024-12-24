@@ -15,7 +15,7 @@ import {
 } from '../../../controllers/workspace.controller.js'
 import verifyToken from '../../../middlewares/authMiddleware.js'
 import validate from '../../../validations/validator.js'
-import { addChannelSchema, addMemberSchema, joinByCodeSchema, removeMemberSchema, updateWorkspaceSchema, workspaceSchema } from '../../../validations/workspace.validation.js'
+import { addChannelSchema, addMemberSchema, removeMemberSchema, updateWorkspaceSchema, workspaceSchema } from '../../../validations/workspace.validation.js'
 const workspaceRouter = Router()
 
 workspaceRouter.get('/ping', (req, res) => {

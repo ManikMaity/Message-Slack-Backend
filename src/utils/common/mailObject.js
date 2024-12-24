@@ -21,3 +21,12 @@ export const createForgetPasswordMail = (to, token) => {
         text :  `Click on this link to reset your password ${CLIENT_URL}/reset-password/${token}`
     }
 }
+
+export const createUserVerificationMail = (to, token) => {
+    return {
+        from : MAIL_ID,
+        to : to,
+        subject: 'Verify your email',   
+        text :  `Click on this link to verify your email ${CLIENT_URL}/verifyemail/${token}`
+    }
+}

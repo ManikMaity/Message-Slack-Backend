@@ -2,9 +2,11 @@ import { StatusCodes } from 'http-status-codes'
 
 import {
   forgetPasswordService,
+  resendVerifyEmailService,
   resetPasswordService,
   signinService,
-  signupService
+  signupService,
+  verifyEmailService
 } from '../services/user.service.js'
 import {
   customErrorResponse,
@@ -76,6 +78,40 @@ export const resetPasswordController = async (req, res) => {
       .status(StatusCodes.OK)
       .json(customSuccessResponse('Password reset successfully', response))
   } catch (err) {
+    if (err.statusCode) {
+      res.status(err.statusCode).json(customErrorResponse(err))
+    } else {
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json(internalServerError(err))
+    }
+  }
+}
+
+export const verifyEmailController = async (req, res) => {
+  try{
+    const token = req.params.token;
+    const response = await verifyEmailService(token);
+    res.status(StatusCodes.OK).json(customSuccessResponse("Email verified successfully", response));
+  }
+  catch(err){
+    if (err.statusCode) {
+      res.status(err.statusCode).json(customErrorResponse(err))
+    } else {
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json(internalServerError(err))
+    }
+  }
+}
+
+export const resendVerifyEmailController = async (req, res) => {
+  try {
+    const email = req.body.email;
+    const response = await resendVerifyEmailService(email);
+    res.status(StatusCodes.OK).json(customSuccessResponse("verification link resend successfully", {}));
+  }
+  catch(err){
     if (err.statusCode) {
       res.status(err.statusCode).json(customErrorResponse(err))
     } else {

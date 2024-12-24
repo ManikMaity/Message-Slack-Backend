@@ -3,17 +3,31 @@ import { StatusCodes } from 'http-status-codes'
 import jwt from 'jsonwebtoken'
 
 import transporter from '../config/mail.config.js'
-import { JWT_SECRET, SALT_ROUND } from '../config/variables.js'
+import {
+  ENABLE_EMAIL_VERIFICATION,
+  JWT_SECRET,
+  SALT_ROUND
+} from '../config/variables.js'
 import forgetPasswordRepo from '../repositories/forgetPassword.repo.js'
 import userRepo from '../repositories/user.repo.js'
-import { createForgetPasswordMail } from '../utils/common/mailObject.js'
+import {
+  createForgetPasswordMail,
+  createUserVerificationMail
+} from '../utils/common/mailObject.js'
 import createPasswordHash from '../utils/createJoinCode.js'
 import clientError from '../utils/errors/clientError.js'
 import ValidationError from '../utils/validationError.js'
+import mailQueue from '../queues/mail.queue.js'
+import emailVerificationRepo from '../repositories/emailVerification.repo.js'
 
 export const signupService = async (username, email, password) => {
   try {
     const user = await userRepo.create({ username, email, password })
+    if (ENABLE_EMAIL_VERIFICATION) {
+      const hash = createPasswordHash(8)
+      await emailVerificationRepo.create({ email, hash, user: user._id })
+      mailQueue.add(createUserVerificationMail(email, hash))
+    }
     return user
   } catch (err) {
     console.log('user signup error', err)
@@ -110,4 +124,71 @@ export async function resetPasswordService(password, hash) {
   await forgetPasswordRepo.delete(forgetPassword._id)
 
   return user
+}
+
+export async function verifyEmailService(hash) {
+  const verificationDoc = await emailVerificationRepo.getByHash(hash)
+
+  if (!verificationDoc) {
+    throw {
+      statusCode: StatusCodes.NOT_FOUND,
+      message: 'This verification link is not valid',
+      explanation: ['This verification link is not valid']
+    }
+  }
+
+  if (verificationDoc.verificationExpiry < Date.now()) {
+    throw {
+      statusCode: StatusCodes.NOT_FOUND,
+      message: 'This verification link is expired',
+      explanation: ['This verification link is expired']
+    }
+  }
+
+  const user = await userRepo.update(verificationDoc.user, { isVerified: true })
+  await emailVerificationRepo.delete(verificationDoc._id)
+  return user
+}
+
+export async function resendVerifyEmailService(email) {
+  if (!email || email.trim() === '') {
+    throw {
+      statusCode: StatusCodes.BAD_REQUEST,
+      message: 'Email is required',
+      explanation: ['Email is required']
+    }
+  }
+  const user = await userRepo.getUserByEmail(email)
+
+  if (!user) {
+    throw {
+      statusCode: StatusCodes.NOT_FOUND,
+      message: 'User not found with this email please signup first',
+      explanation: ['User not found with this email please signup first']
+    }
+  }
+
+  if (user.isVerified) {
+    throw {
+      statusCode: StatusCodes.BAD_REQUEST,
+      message: 'User is already verified',
+      explanation: ['User is already verified']
+    }
+  }
+
+  const verifyEmailDoc = await emailVerificationRepo.getByEmail(email)
+  const hash = createPasswordHash(8)
+
+  if (verifyEmailDoc) {
+    await emailVerificationRepo.update(verifyEmailDoc._id, {
+      hash, 
+      verificationExpiry: Date.now() + 24 * 60 * 60 * 1000
+    })
+
+  } else {
+    await emailVerificationRepo.create({ email, hash, user: user._id })
+  }
+
+  mailQueue.add(createUserVerificationMail(email, hash))
+  return user;
 }

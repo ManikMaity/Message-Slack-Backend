@@ -3,9 +3,11 @@ import { StatusCodes } from 'http-status-codes'
 
 import {
   forgetPasswordController,
+  resendVerifyEmailController,
   resetPasswordController,
   signinController,
-  signupController
+  signupController,
+  verifyEmailController
 } from '../../../controllers/user.controller.js'
 import forgetPassSchema from '../../../validations/forgetPass.validation.js'
 import resetPasswordShema from '../../../validations/resetPassword.validation.js'
@@ -25,5 +27,8 @@ userRouter.post('/signup', validate(signupSchema), signupController)
 userRouter.post('/signin', validate(signinSchema), signinController)
 userRouter.post('/forget-password', validate(forgetPassSchema), forgetPasswordController);
 userRouter.post("/reset-password", validate(resetPasswordShema), resetPasswordController);
+userRouter.get("/verifyEmail/:token", verifyEmailController);
+userRouter.post("/resend-verifyEmail", resendVerifyEmailController);
+
 
 export default userRouter
