@@ -21,7 +21,7 @@ export function isMemberOfWorkspacePopulated(workspace, userId) {
   return isMember
 }
 
-function isAdminOfWorkspace(workspace, userId) {
+export function isAdminOfWorkspace(workspace, userId) {
   const isAdmin = workspace.members.find(
     (member) =>
       member.member.toString() == userId.toString() && member.role == 'admin'

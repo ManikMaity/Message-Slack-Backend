@@ -1,4 +1,4 @@
-import { get } from "mongoose";
+
 import EmailVarificationModel from "../schema/emailVarification.schema.js";
 import crudRepo from "./crudRepo.js";
 

@@ -8,6 +8,8 @@ import {
   JWT_SECRET,
   SALT_ROUND
 } from '../config/variables.js'
+import mailQueue from '../queues/mail.queue.js'
+import emailVerificationRepo from '../repositories/emailVerification.repo.js'
 import forgetPasswordRepo from '../repositories/forgetPassword.repo.js'
 import userRepo from '../repositories/user.repo.js'
 import {
@@ -17,8 +19,6 @@ import {
 import createPasswordHash from '../utils/createJoinCode.js'
 import clientError from '../utils/errors/clientError.js'
 import ValidationError from '../utils/validationError.js'
-import mailQueue from '../queues/mail.queue.js'
-import emailVerificationRepo from '../repositories/emailVerification.repo.js'
 
 export const signupService = async (username, email, password) => {
   try {

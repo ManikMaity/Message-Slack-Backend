@@ -93,7 +93,7 @@ const workspaceRepo = {
     if (!workspace) {
       throw new clientError({
         message: 'Workspace not found',
-        explanation: 'Invailid data given',
+        explanation: ['Invailid data given'],
         statusCode: StatusCodes.NOT_FOUND
       })
     }
@@ -103,13 +103,39 @@ const workspaceRepo = {
     if (exitingChannel) {
       throw new clientError({
         message: 'Channel already exists in workspace',
-        explanation: 'Channel already exists in workspace',
+        explanation: ['Channel already exists in workspace'],
         statusCode: StatusCodes.BAD_REQUEST
       })
     }
     const channel = await channelRepo.create({ name: channelName, workspaceId })
     workspace.channels.push(channel)
     await workspace.save()
+    return workspace
+  },
+
+  removeChannelFromWorkspace: async (workspaceId, channelId) => {
+    const workspace = await WorkspaceModel.findById(workspaceId);
+
+    if (!workspace) {
+      throw new clientError({
+        message: 'Workspace not found',
+        explanation: ['Invailid data given'],
+        statusCode: StatusCodes.NOT_FOUND
+      })
+    }
+
+    const channelExits = workspace?.channels.find(channel => channel.toString() === channelId.toString());
+
+    if (!channelExits){
+        throw clientError({
+          message: 'Channel is not a part of this workspace',
+          explanation: [ 'Channel is not a part of this workspace'],
+          statusCode: StatusCodes.NOT_FOUND
+        })
+    }
+
+    workspace.channels = workspace.channels.filter(channel => channel.toString() !== channelId.toString());
+    await workspace.save();
     return workspace
   },
   fetchAllWorkspacesByMemberId: async (memberId) => {

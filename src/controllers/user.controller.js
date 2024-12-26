@@ -108,7 +108,7 @@ export const verifyEmailController = async (req, res) => {
 export const resendVerifyEmailController = async (req, res) => {
   try {
     const email = req.body.email;
-    const response = await resendVerifyEmailService(email);
+     await resendVerifyEmailService(email);
     res.status(StatusCodes.OK).json(customSuccessResponse("verification link resend successfully", {}));
   }
   catch(err){
