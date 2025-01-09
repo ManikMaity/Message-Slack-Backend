@@ -33,3 +33,24 @@ export async function createMessageService(messageData) {
     const messageDetail = await messageRepo.getMessageDetail(newMessage._id);
     return messageDetail;
 }
+
+export async function updateMessageService(messageData) {
+    const message = await messageRepo.getById(messageData.messageId);
+    if (!message) {
+        throw {
+            statusCode: StatusCodes.NOT_FOUND,
+            message: 'Message not found',
+            explanation: ['Message not found']
+        }
+    }
+    if (message.senderId.toString() !== messageData?.userId.toString()) {
+        throw {
+            statusCode: StatusCodes.UNAUTHORIZED,
+            message: 'You are not athorized to update this message',
+            explanation: ['You are not athorized to update this message']
+        }
+    }
+    const updatedMessage = await messageRepo.update(messageData?.messageId, messageData.updateContent);
+    const messageDetail = await messageRepo.getMessageDetail(updatedMessage._id);
+    return messageDetail;
+}
