@@ -67,7 +67,7 @@ export async function deleteChannelService(channelId, userId) {
     channelId
   )
 
-  const deletedChannel = await channelRepo.delete(channelId)
+  const deletedChannel = await channelRepo.deleteChannelWithWorkspace(channelId)
 
   return deletedChannel
 }

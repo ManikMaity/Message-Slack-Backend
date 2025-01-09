@@ -30,5 +30,6 @@ export async function getMessagePaginatedService(userId, messageParams, page, li
 
 export async function createMessageService(messageData) {
     const newMessage = await messageRepo.create(messageData);
-    return newMessage;
+    const messageDetail = await messageRepo.getMessageDetail(newMessage._id);
+    return messageDetail;
 }

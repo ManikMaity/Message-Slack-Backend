@@ -6,6 +6,7 @@ import {
   resetPasswordService,
   signinService,
   signupService,
+  updateUserProfileService,
   verifyEmailService
 } from '../services/user.service.js'
 import {
@@ -112,6 +113,31 @@ export const resendVerifyEmailController = async (req, res) => {
     res.status(StatusCodes.OK).json(customSuccessResponse("verification link resend successfully", {}));
   }
   catch(err){
+    if (err.statusCode) {
+      res.status(err.statusCode).json(customErrorResponse(err))
+    } else {
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json(internalServerError(err))
+    }
+  }
+}
+
+export const updateUserProfileController = async (req, res) => {
+  try {
+    const user = req.user;
+    const {avatar, username} = req.body;
+    if (!avatar && !username) {
+      throw {
+        statusCode: StatusCodes.BAD_REQUEST,
+        message: "Please provide avatar or username to update profile",
+        explanation : ["Please provide avatar or username to update profile"]
+      }
+    }
+    const updatedUser = await updateUserProfileService(user, req.body);
+    res.status(StatusCodes.OK).json(customSuccessResponse("Profile updated successfully", updatedUser));
+  }
+  catch (err) {
     if (err.statusCode) {
       res.status(err.statusCode).json(customErrorResponse(err))
     } else {

@@ -50,6 +50,17 @@ const verifyToken = async (req, res, next) => {
         })
       )
     }
+
+    if (err.name === 'TokenExpiredError') {
+      return res.status(StatusCodes.FORBIDDEN).json(
+        customErrorResponse({
+          statusCode: StatusCodes.FORBIDDEN,
+          message: 'Expired auth token provided',
+          explanation: 'Expired auth token provided'
+        })
+      )
+    }
+
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json(internalServerError(err))

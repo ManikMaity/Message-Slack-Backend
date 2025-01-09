@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken'
 import transporter from '../config/mail.config.js'
 import {
   ENABLE_EMAIL_VERIFICATION,
+  JWT_EXPIRY,
   JWT_SECRET,
   SALT_ROUND
 } from '../config/variables.js'
@@ -62,12 +63,11 @@ export const signinService = async (email, password) => {
         explanation: "Password does'nt match with the user password"
       })
     }
-    const token = jwt.sign({ id: user._id }, JWT_SECRET)
+    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: JWT_EXPIRY })
     // eslint-disable-next-line no-unused-vars
     const { password: pass, ...userData } = user._doc
     return { user: userData, token }
   } catch (err) {
-    console.log(err)
     throw err
   }
 }
@@ -191,4 +191,20 @@ export async function resendVerifyEmailService(email) {
 
   mailQueue.add(createUserVerificationMail(email, hash))
   return user;
+}
+
+export async function updateUserProfileService(user, data) {
+  
+  if (data?.username !== user.username) {
+    const userNameExit = await userRepo.getUserByUsername(data.username);
+    if (userNameExit) {
+      throw {
+        statusCode: StatusCodes.BAD_REQUEST,
+        message: 'Username already exist',
+        explanation: ['Username already exist please choose another username']
+      }
+    }
+  }
+  const updatedUser = await userRepo.update(user._id, data)
+  return updatedUser
 }

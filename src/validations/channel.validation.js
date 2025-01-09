@@ -1,6 +1,6 @@
 import {z} from "zod";
 
-const channelUpdateSchema = z.object({
+export const channelUpdateSchema = z.object({
     name : z.string({
         invalid_type_error : 'name must be a string'
     })

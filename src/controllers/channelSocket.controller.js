@@ -5,10 +5,12 @@ export default function channelMessageHandler(socket) {
         const roomId = data.channelId;
         socket.join(roomId);
         console.log("Joined channel", roomId);
-        cb({
-            success: true,
-            message: 'Joined channel successfully',             
-            data: roomId
-        });
+        if (cb){
+            cb({
+                success: true,
+                message: 'Joined channel successfully',             
+                data: roomId
+            });
+        }
     })
 }

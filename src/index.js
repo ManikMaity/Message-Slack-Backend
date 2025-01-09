@@ -21,11 +21,17 @@ app.use(cors(
     credentials: true
   }
 ))
+
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 const server = createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: CLIENT_URL,
+    credentials: true
+  }
+});
 
 io.on("connection", (socket) => {
   messageHandler(io, socket);
