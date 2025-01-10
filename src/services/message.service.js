@@ -5,6 +5,10 @@ import workspaceRepo from "../repositories/workspace.repo.js";
 import clientError from "../utils/errors/clientError.js";
 import { isMemberOfWorkspace } from "./workspace.service.js";
 
+import jwt from 'jsonwebtoken'
+import { JWT_SECRET } from "../config/variables.js";
+
+
 export async function getMessagePaginatedService(userId, messageParams, page, limit) {
     const workspace = await workspaceRepo.getWorkspaceFromChannelId(messageParams.channelId);
     if (!workspace) {
@@ -35,6 +39,14 @@ export async function createMessageService(messageData) {
 }
 
 export async function updateMessageService(messageData) {
+
+    if (!messageData?.token){
+        throw {
+            statusCode: StatusCodes.UNAUTHORIZED,
+            message: 'Slack token is required',
+            explanation: ['Slack token is required']
+        }   
+    }
     const message = await messageRepo.getById(messageData.messageId);
     if (!message) {
         throw {
@@ -43,13 +55,18 @@ export async function updateMessageService(messageData) {
             explanation: ['Message not found']
         }
     }
-    if (message.senderId.toString() !== messageData?.userId.toString()) {
+
+    const {id} = jwt.verify(messageData?.token, JWT_SECRET);
+    console.log(id, message.senderId.toString());
+
+    if (id.toString() !== message.senderId.toString()) {
         throw {
             statusCode: StatusCodes.UNAUTHORIZED,
-            message: 'You are not athorized to update this message',
-            explanation: ['You are not athorized to update this message']
+            message: 'You are not athorized to edit this message',
+            explanation: ['You are not athorized to edit this message']
         }
     }
+
     const updatedMessage = await messageRepo.update(messageData?.messageId, messageData.updateContent);
     const messageDetail = await messageRepo.getMessageDetail(updatedMessage._id);
     return messageDetail;

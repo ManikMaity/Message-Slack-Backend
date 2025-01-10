@@ -206,5 +206,6 @@ export async function updateUserProfileService(user, data) {
     }
   }
   const updatedUser = await userRepo.update(user._id, data)
-  return updatedUser
+  const {password, ...userData} = updatedUser._doc;
+  return userData;
 }

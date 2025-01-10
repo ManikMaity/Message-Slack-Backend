@@ -10,13 +10,13 @@ import {
   updateUserProfileController,
   verifyEmailController
 } from '../../../controllers/user.controller.js'
+import verifyToken from '../../../middlewares/authMiddleware.js'
 import forgetPassSchema from '../../../validations/forgetPass.validation.js'
 import resetPasswordShema from '../../../validations/resetPassword.validation.js'
 import signinSchema from '../../../validations/signin.validation.js'
 import signupSchema from '../../../validations/signup.validation.js'
-import validate from '../../../validations/validator.js'
-import verifyToken from '../../../middlewares/authMiddleware.js'
 import { userProfileUpdateSchema } from '../../../validations/userProfileUpdate.validation.js'
+import validate from '../../../validations/validator.js'
 const userRouter = express.Router()
 
 userRouter.get('/', (req, res) => {
@@ -32,7 +32,7 @@ userRouter.post('/forget-password', validate(forgetPassSchema), forgetPasswordCo
 userRouter.post("/reset-password", validate(resetPasswordShema), resetPasswordController);
 userRouter.get("/verifyEmail/:token", verifyEmailController);
 userRouter.post("/resend-verifyEmail", resendVerifyEmailController);
-userRouter.put("/upadate-profile", validate(userProfileUpdateSchema), verifyToken, updateUserProfileController);
+userRouter.put("/update-profile", validate(userProfileUpdateSchema), verifyToken, updateUserProfileController);
 
 
 export default userRouter
