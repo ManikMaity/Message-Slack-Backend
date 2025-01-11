@@ -19,6 +19,11 @@ const likeSchema = new Schema({
         type : Schema.Types.ObjectId,
         ref : "Channel",
         required : [true, "Channel id is required"]
+    },
+    workspaceId : {
+        type : Schema.Types.ObjectId,
+        ref : "Workspace",
+        required : [true, "Workspace id is required"]
     }
 }, {timestamps : true});
 

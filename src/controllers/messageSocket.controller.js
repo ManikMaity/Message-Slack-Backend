@@ -2,12 +2,17 @@ import {
   createMessageService,
   updateMessageService
 } from '../services/message.service.js'
+import jwt from 'jsonwebtoken'
 import {
   EDIT_MESSAGE_EVENT,
   EDITED_MESSAGE_RECEIVED,
   NEW_MESSAGE_EVENT,
+  NEW_MESSAGE_LIKE,
+  NEW_MESSAGE_LIKE_RECEIVED,
   NEW_MESSAGE_RECEIVED
 } from '../utils/common/socketEventConstant.js'
+import { JWT_SECRET } from '../config/variables.js'
+import { createLikeService } from '../services/like.service.js'
 
 export function messageHandler(io, socket) {
   socket.on(EDIT_MESSAGE_EVENT, async function editMessageHandler(data, cb) {
@@ -43,6 +48,36 @@ export function messageHandler(io, socket) {
         message: 'Message created successfully',
         data: messageResponse
       })
+    }
+  })
+
+  socket.on(NEW_MESSAGE_LIKE, async function likeMessageHandler(data, cb) {
+    const { workspaceId, channelId, likeContent, messageId, token } = data
+    try {
+      const { id } = jwt.verify(token, JWT_SECRET)
+      const updatedMessage = await createLikeService(
+        messageId,
+        likeContent,
+        channelId,
+        workspaceId,
+        id
+      )
+      io.to(channelId).emit(NEW_MESSAGE_LIKE_RECEIVED, updatedMessage)
+      if (cb) {
+        cb({
+          success: true,
+          message: 'Like created successfully',
+          data: updatedMessage
+        })
+      }
+    } catch (err) {
+      if (cb) {
+        cb({
+          success: false,
+          message: err.message,
+          err: err.explanation
+        })
+      }
     }
   })
 }

@@ -23,7 +23,13 @@ const messageSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Workspace',
       required: [true, 'Workspace id is required']
-    }
+    },
+    likes : [
+      {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : "Like"
+      }
+    ]
   },
   { timestamps: true }
 )

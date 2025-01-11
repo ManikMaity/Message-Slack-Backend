@@ -14,6 +14,10 @@ const messageRepo = {
   getMessageDetail : async function (messageId) {
     const message = await MessageModel.findById(messageId).populate('senderId', 'username email avatar');
     return message
+  },
+  getMessageWithLikesDetail : async function (messageId) {
+    const response = await MessageModel.findById(messageId).populate('likes');
+    return response
   }
 }
 
