@@ -1,12 +1,11 @@
 import { StatusCodes } from "http-status-codes";
+import jwt from 'jsonwebtoken'
 
+import { JWT_SECRET } from "../config/variables.js";
 import messageRepo from "../repositories/message.repo.js";
 import workspaceRepo from "../repositories/workspace.repo.js";
 import clientError from "../utils/errors/clientError.js";
 import { isMemberOfWorkspace } from "./workspace.service.js";
-
-import jwt from 'jsonwebtoken'
-import { JWT_SECRET } from "../config/variables.js";
 
 
 export async function getMessagePaginatedService(userId, messageParams, page, limit) {

@@ -147,7 +147,8 @@ export async function verifyEmailService(hash) {
 
   const user = await userRepo.update(verificationDoc.user, { isVerified: true })
   await emailVerificationRepo.delete(verificationDoc._id)
-  return user
+  const {password, ...userData} = user._doc;
+  return userData;
 }
 
 export async function resendVerifyEmailService(email) {
