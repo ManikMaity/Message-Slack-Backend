@@ -1,8 +1,11 @@
+import jwt from 'jsonwebtoken'
+
+import { JWT_SECRET } from '../config/variables.js'
+import { createLikeService } from '../services/like.service.js'
 import {
   createMessageService,
   updateMessageService
 } from '../services/message.service.js'
-import jwt from 'jsonwebtoken'
 import {
   EDIT_MESSAGE_EVENT,
   EDITED_MESSAGE_RECEIVED,
@@ -11,8 +14,6 @@ import {
   NEW_MESSAGE_LIKE_RECEIVED,
   NEW_MESSAGE_RECEIVED
 } from '../utils/common/socketEventConstant.js'
-import { JWT_SECRET } from '../config/variables.js'
-import { createLikeService } from '../services/like.service.js'
 
 export function messageHandler(io, socket) {
   socket.on(EDIT_MESSAGE_EVENT, async function editMessageHandler(data, cb) {

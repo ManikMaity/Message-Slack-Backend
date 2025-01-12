@@ -7,7 +7,7 @@ const messageRepo = {
     const messages = await MessageModel.find(messageParams)
       .sort({ createdAt: 1 })
       .skip((page - 1) * limit)
-      .limit(limit).populate('senderId', 'username email avatar');
+      .limit(limit).populate('senderId', 'username email avatar').populate('likes');
 
     return messages
   },
@@ -16,7 +16,7 @@ const messageRepo = {
     return message
   },
   getMessageWithLikesDetail : async function (messageId) {
-    const response = await MessageModel.findById(messageId).populate('likes');
+    const response = await MessageModel.findById(messageId).populate('senderId', 'username email avatar').populate('likes');
     return response
   }
 }

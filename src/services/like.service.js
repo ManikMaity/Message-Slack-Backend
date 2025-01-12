@@ -61,3 +61,25 @@ export async function createLikeService(
   const updatedMessage = await messageRepo.getMessageWithLikesDetail(messageId);
   return updatedMessage;
 }
+
+export async function getMessageLikesService(messageId) {
+  const message = await messageRepo.getById(messageId);
+  if (!message) {
+    throw {
+      statusCode: StatusCodes.NOT_FOUND,
+      message: 'Message not found',
+      explanation: ['Message not found']
+    }
+  }
+
+  if (!message.likes) {
+    throw {
+      statusCode: StatusCodes.NOT_FOUND,
+      message: 'No Reactions found for this message',
+      explanation: ['No Reactions found for this message']
+    }
+  }
+  
+  const likes = await likeRepo.getAllLikesByMessageId(messageId);
+  return likes;
+}
