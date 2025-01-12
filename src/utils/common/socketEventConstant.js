@@ -5,5 +5,6 @@ export const NEW_MESSAGE_RECEIVED = "NewMessageReceived";
 export const NEW_CHANNEL_MESSAGE = "NewChannelMessage";
 export const NEW_CHANNEL_MESSAGE_RECEIVED = "NewChannelMessageReceived";
 export const  JOIN_CHANNEL = "JoinChannel";
+export const LEAVE_CHANNEL = "LeaveChannel";
 export const NEW_MESSAGE_LIKE = "NewMessageLike";
 export const NEW_MESSAGE_LIKE_RECEIVED = "NewMessageLikeReceived";
