@@ -65,6 +65,17 @@ export const addMemberSchema = z.object({
     .optional()
 })
 
+export const makeAdminSchema = z.object({
+  workspaceId: z.string({
+    required_error: 'Workspace id is requirerd',
+    invalid_type_error: 'Workspace id must be a string'
+  }),
+  memberId :  z.string({
+    required_error: 'Member id is requirerd',
+    invalid_type_error: 'Member id must be a string'
+  })
+})
+
 export const removeMemberSchema = z.object({
   memberId: z.string({
     required_error: 'memberId is required',

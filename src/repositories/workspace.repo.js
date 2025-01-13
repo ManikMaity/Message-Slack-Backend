@@ -62,6 +62,38 @@ const workspaceRepo = {
     await workspace.save()
     return workspace
   },
+  makeWorkspaceMemberAdmin : async (workspaceId, userId) => {
+    const workspace = await WorkspaceModel.findById(workspaceId).populate("members.member", "username avatar email");
+
+    const isAlreadyAdmin = workspace.members.find(member => {
+      if (member?.member?.id.toString() == userId.toString() &&  member?.role == "admin"){
+        return true;
+      }
+      else {
+        return false;
+      }
+    })
+
+    if (isAlreadyAdmin) {
+      throw {
+        message: 'Member is already a admin',
+        explanation: ['Member is already a admin'],
+        statusCode: StatusCodes.UNAUTHORIZED
+      }
+    }
+    
+    workspace?.members?.forEach(member => {
+      if (member?.member?._id.toString() == userId.toString()){
+        member.role = "admin";
+      }
+      return member;
+    })
+
+    await workspace.save();
+
+    return workspace;
+    
+  },
   removeMemberFromWorkspace: async (workspaceId, userId) => {
     const workspace = await WorkspaceModel.findById(workspaceId)
     if (!workspace) {
@@ -112,7 +144,6 @@ const workspaceRepo = {
     await workspace.save()
     return workspace
   },
-
   removeChannelFromWorkspace: async (workspaceId, channelId) => {
     const workspace = await WorkspaceModel.findById(workspaceId);
 

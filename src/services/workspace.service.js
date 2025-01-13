@@ -29,6 +29,11 @@ export function isAdminOfWorkspace(workspace, userId) {
   return isAdmin
 }
 
+export function moreThanOneAdmin(workspace) {
+  const adminCount = workspace.members?.filter(member => member?.role == 'admin').length;
+  return adminCount > 1;
+}
+
 function isChannelAlreadyExits(workspace, channelName) {
   const exit = workspace.channels.find(
     (channel) => channel.name.toLowerCase() == channelName.toLowerCase()
@@ -227,6 +232,37 @@ export async function addMemberToWorkspaceService(
   return respose
 }
 
+export async function makeWorkspaceMemberAdminService(workspaceId, memberId, userId) {
+  const workspace = await workspaceRepo.getById(workspaceId);
+  if (!workspace) {
+    throw {
+      statusCode: StatusCodes.NOT_FOUND,
+      message: 'Workspace not found',
+      explanation: ['Workspace not found']
+    }
+  }
+
+  const isAdmin = isAdminOfWorkspace(workspace, userId);
+  if (!isAdmin) {
+    throw {
+      statusCode: StatusCodes.UNAUTHORIZED,
+      message: 'You are not athorized to make members admin',
+      explanation: ['You are not athorized to make members admin']
+    }
+  }
+
+  const isMember = isMemberOfWorkspace(workspace, memberId);
+  if (!isMember) {
+    throw {
+      statusCode: StatusCodes.NOT_FOUND,
+      message: 'Member not found in this workspace',
+      explanation: ['Member not found in this workspace']
+    }
+  }
+  const response = await workspaceRepo.makeWorkspaceMemberAdmin(workspaceId, memberId);
+  return response;
+}
+
 export async function removeMemberFromWorkspaceService(
   workspaceId,
   memberId,
@@ -262,6 +298,31 @@ export async function removeMemberFromWorkspaceService(
     workspaceId,
     memberId
   )
+  return response
+}
+
+export async function leaveWorkspaceService(workspaceId, userId) {
+  const workspace = await workspaceRepo.getById(workspaceId);
+  if (!workspace) {
+    throw {
+      statusCode: StatusCodes.NOT_FOUND,
+      message: 'Workspace not found',
+      explanation: ['Workspace not found']
+    }
+  }
+
+  const isAdmin = isAdminOfWorkspace(workspace, userId);
+  const admins = moreThanOneAdmin(workspace);
+  
+  if (isAdmin && !admins) {
+    throw {
+      statusCode: StatusCodes.UNAUTHORIZED,
+      message: 'Workspace should have at least one admin',
+      explanation: ['Make a member admin first']
+    }
+  }
+
+  const response = await workspaceRepo.removeMemberFromWorkspace(workspaceId, userId);
   return response
 }
 

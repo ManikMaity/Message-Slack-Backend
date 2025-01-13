@@ -10,6 +10,8 @@ import {
   getWorkSpaceByJoinCodeService,
   getWorkspaceService,
   joinWorkspaceByCodeService,
+  leaveWorkspaceService,
+  makeWorkspaceMemberAdminService,
   removeMemberFromWorkspaceService,
   updateWorkspaceService
 } from '../services/workspace.service.js'
@@ -174,12 +176,50 @@ export async function addMemberToWorkspaceController(req, res) {
   }
 }
 
+export async function makeWorkspaceMemberAdminController(req, res) {
+  try {
+    const userId = req.user._id;
+    const {memberId, workspaceId} = req.body;
+    const workspace = await makeWorkspaceMemberAdminService(workspaceId, memberId, userId);
+    res.status(StatusCodes.OK).json(customSuccessResponse("Member is made admin successfully", workspace));
+  }
+  catch(err){
+    console.log(err)
+    if (err.statusCode) {
+      res.status(err.statusCode).json(customErrorResponse(err))
+    } else {
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json(internalServerError(err))
+    }
+  }
+}
+
 export async function removeMemberFromWorkspaceController(req, res) {
   try {
     const userId = req.user._id;
     const {memberId, workspaceId} = req.body;
     const workspace = await removeMemberFromWorkspaceService(workspaceId, memberId, userId);
     res.status(StatusCodes.OK).json(customSuccessResponse("Member removed from workspace successfully", workspace));
+  }
+  catch (err) {
+    console.log(err)
+    if (err.statusCode) {
+      res.status(err.statusCode).json(customErrorResponse(err))
+    } else {
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json(internalServerError(err))
+    }
+  }
+}
+
+export async function leaveWorkspaceController(req, res) {
+  try {
+    const userId = req.user._id;
+    const workspaceId = req.params.workspaceId;
+    const response = await leaveWorkspaceService(workspaceId, userId);
+    res.status(StatusCodes.OK).json(customSuccessResponse("Workspace left successfully", response));
   }
   catch (err) {
     console.log(err)
