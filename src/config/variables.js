@@ -15,3 +15,5 @@ export const CLIENT_URL = process.env.CLIENT_URL;
 export const RADIS_PASSWORD = process.env.RADIS_PASSWORD;
 export const ENABLE_EMAIL_VERIFICATION = process.env.ENABLE_EMAIL_VARIFICATION || false;
 export const JWT_EXPIRY = process.env.JWT_EXPIRY;
+export const RAZORPAY_ID = process.env.RAZORPAY_ID;
+export const RAZORPAY_SECRET = process.env.RAZORPAY_SECRET;
