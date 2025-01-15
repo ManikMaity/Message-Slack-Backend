@@ -9,7 +9,16 @@ import { isMemberOfWorkspace } from "./workspace.service.js";
 
 
 export async function getMessagePaginatedService(userId, messageParams, page, limit) {
-    const workspace = await workspaceRepo.getWorkspaceFromChannelId(messageParams.channelId);
+
+    let workspace;
+
+    if (messageParams.workspaceId) {
+        workspace = await workspaceRepo.getById(messageParams.workspaceId);
+    }
+    else {
+        workspace = await workspaceRepo.getWorkspaceFromChannelId(messageParams.channelId);
+    }
+    
     if (!workspace) {
         throw new clientError({
             message: 'Workspace not found',
@@ -28,6 +37,37 @@ export async function getMessagePaginatedService(userId, messageParams, page, li
     }
     const messages = await messageRepo.getMessagePaginated(messageParams, page, limit);
     return messages;
+}
+
+export async function getDMPaginatedMessagesService(userId, workspaceId, combinedId, page, limit) {
+   const combinedIds = combinedId.split('-');
+   const workspace = await workspaceRepo.getById(workspaceId);
+
+   if (!workspace) {
+    throw new clientError({
+        message: 'Workspace not found',
+        explanation: ['Invailid data given'],
+        statusCode: StatusCodes.NOT_FOUND
+    })
+   };
+
+   const isUserIncluded = combinedIds.includes(userId.toString());
+
+   const isMember1 = isMemberOfWorkspace(workspace, combinedIds[0]);
+   const isMember2 = isMemberOfWorkspace(workspace, combinedIds[1]);
+
+   console.log(isUserIncluded, isMember1, isMember2);
+
+   if (!isMember1 || !isMember2 || !isUserIncluded) {
+    throw {
+        message: 'You are not permited to access these DMS',
+        explanation: ['You are not permited to access these DMS'],
+        statusCode: StatusCodes.UNAUTHORIZED
+    }
+   }
+
+   const messages = await messageRepo.getMessagePaginated({roomId : combinedId, workspaceId : workspaceId}, page, limit);
+   return messages;
 }
 
 

@@ -9,6 +9,8 @@ import {
 import {
   EDIT_MESSAGE_EVENT,
   EDITED_MESSAGE_RECEIVED,
+  NEW_DM_MESSAGE,
+  NEW_DM_MESSAGE_LIKE,
   NEW_MESSAGE_EVENT,
   NEW_MESSAGE_LIKE,
   NEW_MESSAGE_LIKE_RECEIVED,
@@ -39,6 +41,19 @@ export function messageHandler(io, socket) {
     }
   })
 
+  socket.on(NEW_DM_MESSAGE, async function createMessageHandler(data, cb) {
+    const {roomId } = data
+    const messageResponse = await createMessageService(data)
+    io.to(roomId).emit(NEW_MESSAGE_RECEIVED, messageResponse)
+    if (cb) {
+      cb({
+        success: true,
+        message: 'Message created successfully',
+        data: messageResponse
+      })
+    }
+  })
+
   socket.on(NEW_MESSAGE_EVENT, async function createMessageHandler(data, cb) {
     const { channelId } = data
     const messageResponse = await createMessageService(data)
@@ -64,6 +79,36 @@ export function messageHandler(io, socket) {
         id
       )
       io.to(channelId).emit(NEW_MESSAGE_LIKE_RECEIVED, updatedMessage)
+      if (cb) {
+        cb({
+          success: true,
+          message: 'Like created successfully',
+          data: updatedMessage
+        })
+      }
+    } catch (err) {
+      if (cb) {
+        cb({
+          success: false,
+          message: err.message,
+          err: err.explanation
+        })
+      }
+    }
+  })
+
+  socket.on(NEW_DM_MESSAGE_LIKE, async function likeMessageHandler(data, cb) {
+    const { workspaceId, channelId, likeContent, messageId, token, roomId } = data
+    try {
+      const { id } = jwt.verify(token, JWT_SECRET)
+      const updatedMessage = await createLikeService(
+        messageId,
+        likeContent,
+        channelId,
+        workspaceId,
+        id
+      )
+      io.to(roomId).emit(NEW_MESSAGE_LIKE_RECEIVED, updatedMessage)
       if (cb) {
         cb({
           success: true,

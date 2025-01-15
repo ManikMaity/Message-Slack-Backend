@@ -9,6 +9,10 @@ const messageSchema = new mongoose.Schema(
     image: {
       type: String
     },
+    roomId : {
+      type : String,
+      default : null
+    },
     channelId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Channel',

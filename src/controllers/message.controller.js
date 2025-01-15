@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes'
 
-import { getMessagePaginatedService } from '../services/message.service.js'
+import { getDMPaginatedMessagesService, getMessagePaginatedService } from '../services/message.service.js'
 import {
   customErrorResponse,
   internalServerError
@@ -11,9 +11,7 @@ export async function getMessagePaginatedController(req, res) {
   try {
     const messages = await getMessagePaginatedService(
       req.user._id,
-      {
-        channelId: req.params.channelId
-      },
+      req.params,
       req.query.page || 1,
       req.query.limit || 20
     );
@@ -22,6 +20,32 @@ export async function getMessagePaginatedController(req, res) {
       .status(StatusCodes.OK)
       .json(customSuccessResponse('Messages fetched successfully', messages));
   } catch (err) {
+    console.log(err)
+    if (err.statusCode) {
+      res.status(err.statusCode).json(customErrorResponse(err))
+    } else {
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json(internalServerError(err))
+    }
+  }
+}
+
+export async function getDMMessagesPaginatedController(req, res) {
+  try {
+    const messages = await getDMPaginatedMessagesService(
+      req.user._id,
+      req.params.workspaceId,
+      req.params.combinedId,
+      req.query.page || 1,
+      req.query.limit || 20
+    );
+
+    res
+      .status(StatusCodes.OK)
+      .json(customSuccessResponse('Messages fetched successfully', messages));
+  }
+  catch (err) {
     console.log(err)
     if (err.statusCode) {
       res.status(err.statusCode).json(customErrorResponse(err))

@@ -269,6 +269,15 @@ export async function removeMemberFromWorkspaceService(
   userId
 ) {
   const workspace = await workspaceRepo.getById(workspaceId)
+
+  if (userId.toString() === memberId.toString()) {
+    throw {
+      statusCode: StatusCodes.BAD_REQUEST,
+      message: 'You cannot remove yourself from the workspace',
+      explanation: ['You cannot remove yourself from the workspace instead use leave']
+    }
+  }
+
   if (!workspace) {
     throw {
       statusCode: StatusCodes.NOT_FOUND,
