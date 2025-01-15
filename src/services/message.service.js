@@ -56,7 +56,6 @@ export async function getDMPaginatedMessagesService(userId, workspaceId, combine
    const isMember1 = isMemberOfWorkspace(workspace, combinedIds[0]);
    const isMember2 = isMemberOfWorkspace(workspace, combinedIds[1]);
 
-   console.log(isUserIncluded, isMember1, isMember2);
 
    if (!isMember1 || !isMember2 || !isUserIncluded) {
     throw {
@@ -96,7 +95,6 @@ export async function updateMessageService(messageData) {
     }
 
     const {id} = jwt.verify(messageData?.token, JWT_SECRET);
-    console.log(id, message.senderId.toString());
 
     if (id.toString() !== message.senderId.toString()) {
         throw {
