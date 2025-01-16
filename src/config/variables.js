@@ -17,3 +17,4 @@ export const ENABLE_EMAIL_VERIFICATION = process.env.ENABLE_EMAIL_VARIFICATION |
 export const JWT_EXPIRY = process.env.JWT_EXPIRY;
 export const RAZORPAY_ID = process.env.RAZORPAY_ID;
 export const RAZORPAY_SECRET = process.env.RAZORPAY_SECRET;
+export const RECEIPT_SECRET = process.env.RECEIPT_SECRET || "receipt_1103";

@@ -20,6 +20,8 @@ import {
 import createPasswordHash from '../utils/createJoinCode.js'
 import clientError from '../utils/errors/clientError.js'
 import ValidationError from '../utils/validationError.js'
+import paymentRepo from '../repositories/payment.repo.js'
+import { isExpired } from '../controllers/payment.controller.js'
 
 export const signupService = async (username, email, password) => {
   try {
@@ -48,7 +50,6 @@ export const signupService = async (username, email, password) => {
 }
 
 export const signinService = async (email, password) => {
-  try {
     const user = await userRepo.getUserByEmail(email)
     if (!user) {
       throw new clientError({
@@ -63,13 +64,14 @@ export const signinService = async (email, password) => {
         explanation: "Password does'nt match with the user password"
       })
     }
+    const payment = await paymentRepo.findPaymentByUserId(user._id);
+    if (!payment || isExpired(payment?.updatedAt, 365)) {
+      
+    }
     const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: JWT_EXPIRY })
     // eslint-disable-next-line no-unused-vars
     const { password: pass, ...userData } = user._doc
     return { user: userData, token }
-  } catch (err) {
-    throw err
-  }
 }
 
 export async function forgetPasswordService(email) {
