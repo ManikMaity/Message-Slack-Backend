@@ -1,8 +1,9 @@
+import crypto from 'crypto';
 import { StatusCodes } from "http-status-codes";
+
 import { RAZORPAY_SECRET } from "../config/variables.js";
 import paymentRepo from "../repositories/payment.repo.js"
 import userRepo from "../repositories/user.repo.js";
-import crypto from 'crypto';
 
 export const capturePaymentService = async (orderId, paymentId, signature, amount, userId) => {
   const generated_signature = crypto

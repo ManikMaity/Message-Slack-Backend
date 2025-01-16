@@ -4,9 +4,9 @@ import channelRouter from './channel.route.js'
 import likeRouter from './like.route.js'
 import memberRouter from './member.route.js'
 import messageRouter from './message.route.js'
+import paymentRouter from './payment.route.js'
 import userRouter from './user.route.js'
 import workspaceRouter from './workspace.route.js'
-import paymentRouter from './payment.route.js'
 const v1Router = express.Router()
 
 v1Router.use('/user', userRouter)

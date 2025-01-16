@@ -55,6 +55,7 @@ export async function getMemberDeatilsService(workspaceId, userId, memberId) {
   }
 
   const memberDeatils = await userRepo.getById(memberId);
+  // eslint-disable-next-line no-unused-vars
   const {password, ...data} = memberDeatils._doc;;
   return data;
 }

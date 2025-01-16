@@ -7,6 +7,7 @@
     "dev": "npm run lint:fix && nodemon src/index.js",
     "server": "nodemon src/index.js",
     "format": "prettier --write .",
+    "start": "node src/index.js",
     "lint": "eslint . ",
     "lint:fix": "eslint . --fix "
   },

@@ -9,9 +9,11 @@ import {
   JWT_SECRET,
   SALT_ROUND
 } from '../config/variables.js'
+import { isExpired } from '../controllers/payment.controller.js'
 import mailQueue from '../queues/mail.queue.js'
 import emailVerificationRepo from '../repositories/emailVerification.repo.js'
 import forgetPasswordRepo from '../repositories/forgetPassword.repo.js'
+import paymentRepo from '../repositories/payment.repo.js'
 import userRepo from '../repositories/user.repo.js'
 import {
   createForgetPasswordMail,
@@ -20,8 +22,6 @@ import {
 import createPasswordHash from '../utils/createJoinCode.js'
 import clientError from '../utils/errors/clientError.js'
 import ValidationError from '../utils/validationError.js'
-import paymentRepo from '../repositories/payment.repo.js'
-import { isExpired } from '../controllers/payment.controller.js'
 
 export const signupService = async (username, email, password) => {
   try {
@@ -50,7 +50,7 @@ export const signupService = async (username, email, password) => {
 }
 
 export const signinService = async (email, password) => {
-    const user = await userRepo.getUserByEmail(email)
+    let user = await userRepo.getUserByEmail(email)
     if (!user) {
       throw new clientError({
         message: 'No registered user found with this email',
@@ -66,7 +66,7 @@ export const signinService = async (email, password) => {
     }
     const payment = await paymentRepo.findPaymentByUserId(user._id);
     if (!payment || isExpired(payment?.updatedAt, 365)) {
-      
+      user = await userRepo.update(user._id, { isSubscribed: false });
     }
     const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: JWT_EXPIRY })
     // eslint-disable-next-line no-unused-vars
@@ -149,6 +149,7 @@ export async function verifyEmailService(hash) {
 
   const user = await userRepo.update(verificationDoc.user, { isVerified: true })
   await emailVerificationRepo.delete(verificationDoc._id)
+  // eslint-disable-next-line no-unused-vars
   const {password, ...userData} = user._doc;
   return userData;
 }
@@ -209,6 +210,7 @@ export async function updateUserProfileService(user, data) {
     }
   }
   const updatedUser = await userRepo.update(user._id, data)
+  // eslint-disable-next-line no-unused-vars
   const {password, ...userData} = updatedUser._doc;
   return userData;
 }

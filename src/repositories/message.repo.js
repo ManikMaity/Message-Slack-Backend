@@ -3,6 +3,7 @@ import crudRepo from './crudRepo.js'
 
 const messageRepo = {
   ...crudRepo(MessageModel),
+  // eslint-disable-next-line no-unused-vars
   getMessagePaginated: async function (messageParams, page = 1, limit = 10) {
     const messages = await MessageModel.find(messageParams)
       .sort({ createdAt: 1 }).populate('senderId', 'username email avatar').populate('likes');
