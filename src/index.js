@@ -17,7 +17,7 @@ import apiRouter from './routes/apiRoute/api.route.js'
 const app = express()
 app.use(cors(
   {
-    origin: CLIENT_URL,
+    origin: "*",
     credentials: true
   }
 ))
@@ -28,7 +28,7 @@ app.use(express.urlencoded({ extended: true }))
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: CLIENT_URL,
+    origin: "*",
     credentials: true
   }
 });
