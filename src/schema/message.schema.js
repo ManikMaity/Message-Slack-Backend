@@ -6,6 +6,10 @@ const messageSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Message text is required']
     },
+    simpleText : {
+      type : String,
+      default : null
+    },
     image: {
       type: String
     },

@@ -108,3 +108,28 @@ export async function updateMessageService(messageData) {
     const messageDetail = await messageRepo.getMessageDetail(updatedMessage._id);
     return messageDetail;
 }
+
+export async function searchMessagesService(workspaceId, userId, searchQuery) {
+    const workspace = await workspaceRepo.getById(workspaceId);
+
+    if (!workspace) {
+        throw {
+            statusCode: StatusCodes.NOT_FOUND,
+            message: 'Workspace not found',
+            explanation: ['Workspace not found']
+        }
+    }
+
+    const isMember = isMemberOfWorkspace(workspace, userId);
+
+    if (!isMember) {
+        throw {
+            statusCode: StatusCodes.UNAUTHORIZED,
+            message: 'You are not athorized to access this workspace',
+            explanation: ['You are not athorized to access this workspace']
+        }
+    }
+
+    const messages = await messageRepo.getMessagesBySearch(workspaceId, searchQuery);
+    return messages;
+}

@@ -17,6 +17,15 @@ const messageRepo = {
   getMessageWithLikesDetail : async function (messageId) {
     const response = await MessageModel.findById(messageId).populate('senderId', 'username email avatar').populate('likes');
     return response
+  },
+  getMessagesBySearch : async function (workspaceId, searchQuery) {
+    const response = await MessageModel.find({
+      workspaceId : workspaceId,
+      simpleText : {
+        $regex: searchQuery, $options: 'i'}
+    }).populate('senderId', 'username email avatar');
+
+    return response;
   }
 }
 

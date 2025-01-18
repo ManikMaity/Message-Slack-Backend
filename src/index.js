@@ -6,6 +6,7 @@ import { Server } from 'socket.io';
 
 import serverAdapter from './config/bullBorad.config.js'
 import connectDB from './config/db.config.js'
+// eslint-disable-next-line no-unused-vars
 import { CLIENT_URL, PORT } from './config/variables.js'
 import channelMessageHandler from './controllers/channelSocket.controller.js';
 import { messageHandler } from './controllers/messageSocket.controller.js'
