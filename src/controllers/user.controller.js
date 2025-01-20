@@ -2,6 +2,7 @@ import { StatusCodes } from 'http-status-codes'
 
 import {
   forgetPasswordService,
+  getUserService,
   resendVerifyEmailService,
   resetPasswordService,
   signinService,
@@ -14,6 +15,24 @@ import {
   internalServerError
 } from '../utils/customErrorResponse.js'
 import { customSuccessResponse } from '../utils/successResponseObj.js'
+
+export const getUserController = async (req, res) => {
+  try {
+    const userId = req.user._id
+    const user = await getUserService(userId)
+    res.status(StatusCodes.OK).json(customSuccessResponse("User fetched successfully", user));
+  }
+  catch (err) {
+    console.log(err)
+    if (err.statusCode) {
+      res.status(err.statusCode).json(customErrorResponse(err))
+    } else {
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json(internalServerError(err))
+    }
+  }
+}
 
 export const signupController = async (req, res) => {
   try {

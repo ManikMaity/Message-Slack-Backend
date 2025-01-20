@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes'
 
 import {
   forgetPasswordController,
+  getUserController,
   resendVerifyEmailController,
   resetPasswordController,
   signinController,
@@ -19,13 +20,7 @@ import { userProfileUpdateSchema } from '../../../validations/userProfileUpdate.
 import validate from '../../../validations/validator.js'
 const userRouter = express.Router()
 
-userRouter.get('/', (req, res) => {
-  res.status(StatusCodes.OK).json({
-    success: true,
-    message: 'User route is working✔️'
-  })
-})
-
+userRouter.get("/", verifyToken, getUserController);
 userRouter.post('/signup', validate(signupSchema), signupController)
 userRouter.post('/signin', validate(signinSchema), signinController)
 userRouter.post('/forget-password', validate(forgetPassSchema), forgetPasswordController);

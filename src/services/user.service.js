@@ -214,3 +214,10 @@ export async function updateUserProfileService(user, data) {
   const {password, ...userData} = updatedUser._doc;
   return userData;
 }
+
+export async function getUserService(id) {
+  const user = await userRepo.getById(id);
+  // eslint-disable-next-line no-unused-vars
+  const {password, ...userData} = user._doc;
+  return userData;
+}
